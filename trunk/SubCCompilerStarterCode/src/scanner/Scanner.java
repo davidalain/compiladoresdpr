@@ -198,19 +198,18 @@ public class Scanner {
 	private int scanToken() throws LexicalException {
 		// The initial automata state is 0
 		// While loop to simulate the automata
-		//DFA do identifcador
-
+		
+		//DFA do identificador
 		if (isLetter(this.currentChar)){
 			if(this.verificarIdentificador()){
-				return verificarPalavrasChaves();
-			}
-			else {
+				return this.verificarPalavrasChaves();
+			} else {
 				throw new LexicalException("ScanToken de Identificador", this.currentChar, this.line, this.column);
 			}
 		}
 		//DFA dos digitos ou numeros
 		else if (isDigit(this.currentChar)){
-			int retVerificarNumeros = verificarNumero();
+			int retVerificarNumeros = this.verificarNumero();
 			if(retVerificarNumeros == 0){
 				return GrammarSymbols.INT;
 			}else if(retVerificarNumeros == 1){
@@ -221,11 +220,8 @@ public class Scanner {
 		}
 		//DFA de outros tokens (por exemplo :  ;)
 		else if (isGraphic(this.currentChar)){
-			return verificarOutrosTokens();
+			return this.verificarOutrosTokens();
 		}
-
-
-
 
 		//TODO: Verificar esse retorno do -1
 		return -1;
@@ -249,6 +245,12 @@ public class Scanner {
 		return true;
 	}
 
+	/**
+	 * Verifica se o spelling corrente é uma palavra reservada
+	 * se for retorna o tipo correspondente,
+	 * se não retorna GrammarSymbols.ID; 
+	 * @return
+	 */
 	private int verificarPalavrasChaves (){
 		if(this.currentSpelling.toString().equals("boolean")){
 			return GrammarSymbols.BOOLEAN;
@@ -297,7 +299,13 @@ public class Scanner {
 		return estado;
 	}
 
-
+	/**
+	 * Verifica se o token é algum simbolo do grupo:
+	 *  , ; (  )  {  }  =  *  /  +  -  ==  !=  <  <=  >  >=
+	 *  se for retorna o inteiro do tipo correspondente,
+	 *  se não for retorna -1
+	 * @return
+	 */
 	private int verificarOutrosTokens(){
 		
 		int kindRet = -1;
@@ -324,20 +332,15 @@ public class Scanner {
 			case '-' : kindRet = GrammarSymbols.MINUS; break;
 			case ',' : kindRet = GrammarSymbols.COMMA; break;
 			case '=' : {
-				
 				kindRet = GrammarSymbols.ASSIGN;
 				this.getNextChar();
 				if (this.currentChar == '='){
 					kindRet = GrammarSymbols.EQUAL;
 				}
-				
-				
 			}
 			
-			
-
 		}
-
-		return -1;
+		
+		return kindRet;
 	}
 }
