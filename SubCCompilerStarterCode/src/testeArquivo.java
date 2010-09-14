@@ -1,5 +1,4 @@
-import java.util.Scanner;
-
+import scanner.Scanner;
 import util.Arquivo;
 
 
@@ -11,7 +10,8 @@ public class testeArquivo {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		scanner.Scanner scanner = new scanner.Scanner();
+		Scanner scanner = new Scanner();
+		
 //		Arquivo arquivo = new Arquivo("program1.subC", "teste.txt");
 		
 		StringBuffer sb = new StringBuffer("");
