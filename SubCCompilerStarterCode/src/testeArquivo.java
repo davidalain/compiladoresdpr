@@ -15,7 +15,7 @@ public class testeArquivo {
 		Scanner scanner = new Scanner();
 		Token token = scanner.getNextToken();
 		while (token.getKind() != GrammarSymbols.EOT){
-			System.out.print(token.getSpelling() + " ");
+			System.out.print(token.getSpelling() + "\n");
 			token = scanner.getNextToken();
 		}
 		
