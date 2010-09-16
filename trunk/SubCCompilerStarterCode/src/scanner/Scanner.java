@@ -220,15 +220,15 @@ public class Scanner {
 		//DFA de outros tokens (por exemplo :  ;)
 		else if (isGraphic(this.currentChar)){
 			int retVerificarOutrosTokens = this.verificarOutrosTokens();
-			if (this.verificarOutrosTokens() == -1){
+			if (retVerificarOutrosTokens == -1){
 				throw new LexicalException("ScanToken outros Tokens", this.currentChar, this.line, this.column);
 			}
 			else {
 				return retVerificarOutrosTokens;
 			}
-		
 		}
 		
+		//Verificar se isso está correto
 		return GrammarSymbols.EOT;
 	
 		
@@ -323,97 +323,91 @@ public class Scanner {
 	 * @return
 	 */
 	private int verificarOutrosTokens(){
-
 		int kindRet = -1;
 
 		switch (this.currentChar){
-		// ;   
-		case ';' : {
-			kindRet = GrammarSymbols.SEMICOLON;
-			this.getNextChar();
-			break;
-		}
-		case '(' : {
-			kindRet = GrammarSymbols.LPAR; 
-			this.getNextChar();
-			break;
-		}
-		case ')' : {
-			kindRet = GrammarSymbols.RPAR; 
-			this.getNextChar();
-			break;
-		}
-		case '{' : {
-			kindRet = GrammarSymbols.LBRACKET; 
-			this.getNextChar();
-			break;
-		}
-		case '}' : {
-			kindRet = GrammarSymbols.RBRACKET; 
-			this.getNextChar();
-			break;
-		}
-		case '*' : {
-			kindRet = GrammarSymbols.MULT; 
-			this.getNextChar();
-			break;
-		}
-		case '/' : {
-			kindRet = GrammarSymbols.DIV; 
-			this.getNextChar();
-			break;
-		}
-		case '+' : {
-			kindRet = GrammarSymbols.PLUS; 
-			this.getNextChar();
-			break;
-		}
-		case '-' : {
-			kindRet = GrammarSymbols.MINUS; 
-			this.getNextChar();
-			break;
-		}
-		case ',' : {
-			kindRet = GrammarSymbols.COMMA; 
-			this.getNextChar();
-			break;
-		}
-		case '=' : {
-			kindRet = GrammarSymbols.ASSIGN;
-			this.getNextChar();
-			if (this.currentChar == '='){
-				kindRet = GrammarSymbols.EQUAL;
-			}
-			break;
-		}
-		case '!' : {
-			this.getNextChar();
-			if (this.currentChar == '='){
-				kindRet = GrammarSymbols.NOTEQUAL;
+			case ';' : {
+				kindRet = GrammarSymbols.SEMICOLON;
 				this.getNextChar();
 				break;
 			}
-
-		}
-
-		case '<' : {
-			kindRet = GrammarSymbols.LESSERTHAN;
-			this.getNextChar();
-			if (this.currentChar == '='){
-				kindRet = GrammarSymbols.LESSEREQUALTHAN;
+			case '(' : {
+				kindRet = GrammarSymbols.LPAR; 
+				this.getNextChar();
+				break;
 			}
-			break;
-		}
-		case '>' : {
-			kindRet = GrammarSymbols.GREATERTHAN;
-			this.getNextChar();
-			if (this.currentChar == '='){
-				kindRet = GrammarSymbols.GREATEREQUALTHAN;
+			case ')' : {
+				kindRet = GrammarSymbols.RPAR; 
+				this.getNextChar();
+				break;
 			}
-		}
-
-
-
+			case '{' : {
+				kindRet = GrammarSymbols.LBRACKET; 
+				this.getNextChar();
+				break;
+			}
+			case '}' : {
+				kindRet = GrammarSymbols.RBRACKET; 
+				this.getNextChar();
+				break;
+			}
+			case '*' : {
+				kindRet = GrammarSymbols.MULT; 
+				this.getNextChar();
+				break;
+			}
+			case '/' : {
+				kindRet = GrammarSymbols.DIV; 
+				this.getNextChar();
+				break;
+			}
+			case '+' : {
+				kindRet = GrammarSymbols.PLUS; 
+				this.getNextChar();
+				break;
+			}
+			case '-' : {
+				kindRet = GrammarSymbols.MINUS; 
+				this.getNextChar();
+				break;
+			}
+			case ',' : {
+				kindRet = GrammarSymbols.COMMA; 
+				this.getNextChar();
+				break;
+			}
+			case '=' : {
+				kindRet = GrammarSymbols.ASSIGN;
+				this.getNextChar();
+				if (this.currentChar == '='){
+					kindRet = GrammarSymbols.EQUAL;
+				}
+				break;
+			}
+			case '!' : {
+				this.getNextChar();
+				if (this.currentChar == '='){
+					kindRet = GrammarSymbols.NOTEQUAL;
+					this.getNextChar();
+					break;
+				}
+	
+			}
+			case '<' : {
+				kindRet = GrammarSymbols.LESSERTHAN;
+				this.getNextChar();
+				if (this.currentChar == '='){
+					kindRet = GrammarSymbols.LESSEREQUALTHAN;
+				}
+				break;
+			}
+			case '>' : {
+				kindRet = GrammarSymbols.GREATERTHAN;
+				this.getNextChar();
+				if (this.currentChar == '='){
+					kindRet = GrammarSymbols.GREATEREQUALTHAN;
+				}
+			}
 		}
 
 		return kindRet;
