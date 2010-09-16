@@ -1,4 +1,6 @@
+import parser.GrammarSymbols;
 import scanner.Scanner;
+import scanner.Token;
 import util.Arquivo;
 
 
@@ -11,21 +13,12 @@ public class testeArquivo {
 		// TODO Auto-generated method stub
 
 		Scanner scanner = new Scanner();
+		Token token = scanner.getNextToken();
+		while (token.getKind() != GrammarSymbols.EOT){
+			System.out.print(token.getSpelling() + " ");
+			token = scanner.getNextToken();
+		}
 		
-//		Arquivo arquivo = new Arquivo("program1.subC", "teste.txt");
-		
-		StringBuffer sb = new StringBuffer("");
-		
-		sb.append("casa");
-		
-		System.out.println(sb.toString().equals("casa"));
-		
-		
-		
-		
-		
-		//arquivo.close();
-	
 	}
 
 }
