@@ -44,5 +44,44 @@ public class GrammarSymbols {
 	public static final int FALSE = 30;
 	public static final int TRUE = 31;
 	public static final int EOT = 32;
-	
+
+
+	public static String getNameByKind(int kind){
+		switch (kind) {
+		case ID: return "ID";
+		case NUMBER: return "NUMBER";
+		case SEMICOLON: return "SEMICOLON";
+		case LPAR: return "LPAR";
+		case RPAR: return "RPAR";
+		case LBRACKET: return "LBRACKET";
+		case RBRACKET: return "RBRACKET";
+		case ASSIGN: return "ASSIGN";
+		case MULT: return "MULT";
+		case DIV: return "DIV";
+		case PLUS: return "PLUS";
+		case MINUS: return "MINUS";
+		case EQUAL: return "EQUAL";
+		case NOTEQUAL: return "NOTEQUAL";
+		case LESSERTHAN: return "LESSERTHAN";
+		case LESSEREQUALTHAN: return "LESSEREQUALTHAN";
+		case GREATERTHAN: return "GREATERTHAN";
+		case GREATEREQUALTHAN: return "GREATEREQUALTHAN";
+		case COMMA: return "COMMA";
+		case VOID: return "VOID";
+		case INT: return "INT";
+		case DOUBLE: return "DOUBLE";
+		case BOOLEAN: return "BOOLEAN";
+		case IF: return "IF";
+		case ELSE: return "ELSE";
+		case WHILE: return "WHILE";
+		case RETURN: return "RETURN";
+		case BREAK: return "BREAK";
+		case CONTINUE: return "CONTINUE";
+		case PRINTLN: return "PRINTLN";
+		case FALSE: return "FALSE";
+		case TRUE: return "TRUE";
+		case EOT: return "EOT";
+		default: return "[GrammarSymbols.getNameByKind Error] Kind not found";
+		}		
+	}
 }
