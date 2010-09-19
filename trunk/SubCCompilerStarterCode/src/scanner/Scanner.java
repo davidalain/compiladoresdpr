@@ -61,13 +61,16 @@ public class Scanner {
 		}
 
 		this.currentSpelling = new StringBuffer(""); // ou apagar o conteúdo do buffer
+		
 		try{
 			this.currentKind = this.scanToken();
 		}
 		catch (LexicalException e){
-			e.toString();
+			e.printStackTrace();
 		}
-
+		
+		System.out.println("[getNextToken()] kind: "+this.currentKind+"\t, spelling: "+this.currentSpelling.toString());
+		
 		return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
 
 	}
@@ -89,9 +92,6 @@ public class Scanner {
 	 * Reads (and ignores) a separator
 	 * @throws LexicalException
 	 */ //TODO
-
-
-
 	private void scanSeparator() throws LexicalException {
 		// If it is a comment line
 		if ( this.currentChar == '#' ) {
@@ -240,7 +240,8 @@ public class Scanner {
 	 * @return true se estiver no padrão, false se não estiver
 	 */
 	private boolean verificarIdentificador (){
-		while (!isSeparator(this.currentChar)){
+		
+		while (!isSeparator(this.currentChar) && !isSpecialCharacters(this.currentChar)){
 			if(isLetter(this.currentChar) || isDigit(this.currentChar)){
 				this.getNextChar();
 			}
@@ -251,6 +252,13 @@ public class Scanner {
 		return true;
 	}
 
+	private boolean isSpecialCharacters(char pCurrentChar) {
+		if(	pCurrentChar == '(' || pCurrentChar == ';'){
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Verifica se o spelling corrente é uma palavra reservada
 	 * se for retorna o tipo correspondente,
@@ -258,6 +266,7 @@ public class Scanner {
 	 * @return
 	 */
 	private int verificarPalavrasChaves (){
+		
 		if(this.currentSpelling.toString().equals("boolean")){
 			return GrammarSymbols.BOOLEAN;
 		}
@@ -291,7 +300,7 @@ public class Scanner {
 		if(this.currentSpelling.toString().equals("while")){
 			return GrammarSymbols.WHILE;
 		}
-
+		
 		return GrammarSymbols.ID;
 	}
 
