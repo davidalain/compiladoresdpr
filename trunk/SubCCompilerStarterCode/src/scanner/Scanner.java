@@ -69,7 +69,7 @@ public class Scanner {
 			e.printStackTrace();
 		}
 
-		//System.out.println("[getNextToken()] kind: "+this.currentKind+"\t, spelling: "+this.currentSpelling.toString());
+		System.out.println("[getNextToken()] kind: "+this.currentKind+"\t, spelling: "+this.currentSpelling.toString());
 
 		return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
 

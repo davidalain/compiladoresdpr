@@ -117,11 +117,194 @@ public class Parser {
 	/**
 	 * Parse do padrão [FunctionBody]
 	 * FunctionBody -> (Type identifier ;)* Statements
+	 * @throws SyntacticException 
 	 */
-	private void parseFunctionBody() {
+	private void parseFunctionBody() throws SyntacticException {
 		//a funcão possui corpo
 		if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
+			
+			//declaração de variáveis no inicio do corpo da função
+			if(	this.currentToken.getKind() == GrammarSymbols.BOOLEAN || 
+				this.currentToken.getKind() == GrammarSymbols.INT ||
+				this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
+				this.currentToken.getKind() == GrammarSymbols.VOID)
+			{
+				this.parseType();
+				this.accept(GrammarSymbols.ID);
+				this.accept(GrammarSymbols.SEMICOLON);
+				
+				this.parseFunctionBody();
+			}
+			//já leu todas as declarações de variáveis ou
+			//não houve declaração de variáveis
+			else{
+				this.parseStatements();
+			}
+			
+		}
+	}
 
+	/**
+	 * Parse do padrão [Statements]
+	 * Statements -> Statement*
+	 * Statement -> identifier (( (Arguments | empty) ) | = RHS) ; |
+	 * 				if ( Expression ) { Statements } (empty | else { Statements }) |
+	 * 				while ( Expression ) { Statements } |
+	 * 				return Expression ; |
+	 * 				return ; |
+	 * 				break ; |
+	 * 				continue ; |
+	 * 				println ( identifier ) ;
+	 * @throws SyntacticException 
+	 */
+	private void parseStatements() throws SyntacticException {
+		// TODO Auto-generated method stub
+		
+		if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
+			//chamada de função ou atribuição de variável
+			if(this.currentToken.getKind() == GrammarSymbols.ID){
+				//aceitar o Token ID
+				this.acceptIt();
+
+				// chamada de função
+				if(this.currentToken.getKind() == GrammarSymbols.LPAR){
+					
+					// ( Parametros )
+					this.acceptIt();
+					this.parseArguments();
+					this.accept(GrammarSymbols.RPAR);
+					
+				// atribuição
+				}else{
+					this.accept(GrammarSymbols.ASSIGN);
+					this.parseRHS();
+				}
+				
+				this.accept(GrammarSymbols.SEMICOLON);
+			
+			//Padrão if
+			//if ( Expression ) { Statements } (empty | else { Statements }) |
+			}else if(this.currentToken.getKind() == GrammarSymbols.IF){
+				this.acceptIt();
+				
+				//if ( expressão )
+				this.accept(GrammarSymbols.LPAR);
+				this.parseExpression();
+				this.accept(GrammarSymbols.RPAR);
+				
+				// { Statements }
+				this.accept(GrammarSymbols.LBRACKET);
+				this.parseStatements();
+				this.accept(GrammarSymbols.RBRACKET);
+				
+				//else { Statements }
+				if(this.currentToken.getKind() == GrammarSymbols.ELSE){
+					this.acceptIt();
+					
+					// { Statements }
+					this.accept(GrammarSymbols.LBRACKET);
+					this.parseStatements();
+					this.accept(GrammarSymbols.RBRACKET);
+				}
+				
+			//Padrão while
+			//while ( Expression ) { Statements } |
+			}else if(this.currentToken.getKind() == GrammarSymbols.WHILE){
+				
+				// while ( Expression )			
+				this.acceptIt();
+				this.accept(GrammarSymbols.LPAR);
+				this.parseExpression();
+				this.accept(GrammarSymbols.RPAR);
+				
+				// { Statements }
+				this.accept(GrammarSymbols.LBRACKET);
+				this.parseStatements();
+				this.accept(GrammarSymbols.RBRACKET);
+			
+			// Padrão return
+			// return Expression ; |
+			}else if(this.currentToken.getKind() == GrammarSymbols.RETURN){
+				this.acceptIt();
+				
+				if(this.currentToken.getKind() != GrammarSymbols.SEMICOLON){
+					this.parseExpression();
+				}
+				this.accept(GrammarSymbols.SEMICOLON);
+			
+			//break
+			}else if(this.currentToken.getKind() == GrammarSymbols.BREAK){
+				this.acceptIt();
+				this.accept(GrammarSymbols.SEMICOLON);
+				
+			//continue
+			}else if(this.currentToken.getKind() == GrammarSymbols.CONTINUE){
+				this.acceptIt();
+				this.accept(GrammarSymbols.SEMICOLON);
+			
+			//println ( identifier )
+			}else if(this.currentToken.getKind() == GrammarSymbols.PRINTLN){
+				this.acceptIt();
+				
+				// ( identifier )
+				this.accept(GrammarSymbols.LPAR);
+				this.accept(GrammarSymbols.ID);
+				this.accept(GrammarSymbols.RPAR);
+				
+			//Erro, fora do padrão
+			}else{
+				throw new SyntacticException("[parseStatements Erro] fora do padrão", this.currentToken);
+			}
+			
+			
+			this.parseStatements();
+		}
+	}
+
+	private void parseExpression() {
+		// TODO Auto-generated method stub
+		System.out.println("Falta implementar o parseExpression");
+	}
+
+	/**
+	 * Parse do padrão [RHS]
+	 * RHS -> ( Expression ) | identifier ( (Arguments | empty) )
+	 * @throws SyntacticException 
+	 */
+	private void parseRHS() throws SyntacticException {
+		// ( Expression )
+		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
+			this.acceptIt();
+			this.parseExpression();
+			this.accept(GrammarSymbols.RPAR);
+			
+		// identifier ( (Arguments | empty) )
+		}else{
+			
+			this.accept(GrammarSymbols.ID);
+			this.accept(GrammarSymbols.LPAR);
+			this.parseArguments();
+			this.accept(GrammarSymbols.RPAR);
+			
+		}
+		
+	}
+
+	/**
+	 * Parse do padrão [Arguments]
+	 * Arguments -> identifier (empty | , Arguments)
+	 * @throws SyntacticException 
+	 */
+	private void parseArguments() throws SyntacticException {
+		//função tem argumentos
+		if(this.currentToken.getKind() != GrammarSymbols.RPAR){
+			this.accept(GrammarSymbols.ID);
+			
+			while(this.currentToken.getKind() == GrammarSymbols.COMMA){
+				this.acceptIt();
+				this.accept(GrammarSymbols.ID);
+				
+			}
 		}
 	}
 
@@ -135,8 +318,11 @@ public class Parser {
 		if(this.currentToken.getKind() != GrammarSymbols.RPAR){
 			this.parseType();
 			this.accept(GrammarSymbols.ID);
-
-			this.parseParameters();
+			
+			if(this.currentToken.getKind() == GrammarSymbols.COMMA){
+				this.acceptIt();
+				this.parseParameters();
+			}
 		}
 	}
 
