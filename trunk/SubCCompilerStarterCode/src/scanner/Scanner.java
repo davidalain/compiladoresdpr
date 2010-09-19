@@ -61,16 +61,16 @@ public class Scanner {
 		}
 
 		this.currentSpelling = new StringBuffer(""); // ou apagar o conteúdo do buffer
-		
+
 		try{
 			this.currentKind = this.scanToken();
 		}
 		catch (LexicalException e){
 			e.printStackTrace();
 		}
-		
-		System.out.println("[getNextToken()] kind: "+this.currentKind+"\t, spelling: "+this.currentSpelling.toString());
-		
+
+		//System.out.println("[getNextToken()] kind: "+this.currentKind+"\t, spelling: "+this.currentSpelling.toString());
+
 		return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
 
 	}
@@ -227,11 +227,11 @@ public class Scanner {
 				return retVerificarOutrosTokens;
 			}
 		}
-		
+
 		//Verificar se isso está correto
 		return GrammarSymbols.EOT;
-	
-		
+
+
 	}
 
 
@@ -240,7 +240,7 @@ public class Scanner {
 	 * @return true se estiver no padrão, false se não estiver
 	 */
 	private boolean verificarIdentificador (){
-		
+
 		while (!isSeparator(this.currentChar) && !isSpecialCharacters(this.currentChar)){
 			if(isLetter(this.currentChar) || isDigit(this.currentChar)){
 				this.getNextChar();
@@ -253,7 +253,14 @@ public class Scanner {
 	}
 
 	private boolean isSpecialCharacters(char pCurrentChar) {
-		if(	pCurrentChar == '(' || pCurrentChar == ';'){
+		if(	pCurrentChar == '(' || pCurrentChar == ';' || pCurrentChar == ')'
+			|| pCurrentChar == ',' || pCurrentChar == '=' || pCurrentChar == '+'
+				|| pCurrentChar == '{' || pCurrentChar == '}' 	
+					|| pCurrentChar == '<' || pCurrentChar == '>' 	
+						|| pCurrentChar == '/' || pCurrentChar == '*' 	
+
+
+		){
 			return true;
 		}
 		return false;
@@ -266,7 +273,7 @@ public class Scanner {
 	 * @return
 	 */
 	private int verificarPalavrasChaves (){
-		
+
 		if(this.currentSpelling.toString().equals("boolean")){
 			return GrammarSymbols.BOOLEAN;
 		}
@@ -300,7 +307,7 @@ public class Scanner {
 		if(this.currentSpelling.toString().equals("while")){
 			return GrammarSymbols.WHILE;
 		}
-		
+
 		return GrammarSymbols.ID;
 	}
 
@@ -310,7 +317,7 @@ public class Scanner {
 	 */
 	private int verificarNumero(){
 		int estado = 0;
-		while (!isSeparator(this.currentChar)){
+		while (!isSeparator(this.currentChar) && !isSpecialCharacters(this.currentChar)){
 			if(isDigit(this.currentChar)){
 				this.getNextChar();
 			} else if(this.currentChar == '.' && estado != 1){
@@ -335,88 +342,91 @@ public class Scanner {
 		int kindRet = -1;
 
 		switch (this.currentChar){
-			case ';' : {
-				kindRet = GrammarSymbols.SEMICOLON;
+		case ';' : {
+			kindRet = GrammarSymbols.SEMICOLON;
+			this.getNextChar();
+			break;
+		}
+		case '(' : {
+			kindRet = GrammarSymbols.LPAR; 
+			this.getNextChar();
+			break;
+		}
+		case ')' : {
+			kindRet = GrammarSymbols.RPAR; 
+			this.getNextChar();
+			break;
+		}
+		case '{' : {
+			kindRet = GrammarSymbols.LBRACKET; 
+			this.getNextChar();
+			break;
+		}
+		case '}' : {
+			kindRet = GrammarSymbols.RBRACKET; 
+			this.getNextChar();
+			break;
+		}
+		case '*' : {
+			kindRet = GrammarSymbols.MULT; 
+			this.getNextChar();
+			break;
+		}
+		case '/' : {
+			kindRet = GrammarSymbols.DIV; 
+			this.getNextChar();
+			break;
+		}
+		case '+' : {
+			kindRet = GrammarSymbols.PLUS; 
+			this.getNextChar();
+			break;
+		}
+		case '-' : {
+			kindRet = GrammarSymbols.MINUS; 
+			this.getNextChar();
+			break;
+		}
+		case ',' : {
+			kindRet = GrammarSymbols.COMMA; 
+			this.getNextChar();
+			break;
+		}
+		case '=' : {
+			kindRet = GrammarSymbols.ASSIGN;
+			this.getNextChar();
+			if (this.currentChar == '='){
+				kindRet = GrammarSymbols.EQUAL;
+				this.getNextChar();
+			}
+			break;
+		}
+		case '!' : {
+			this.getNextChar();
+			if (this.currentChar == '='){
+				kindRet = GrammarSymbols.NOTEQUAL;
 				this.getNextChar();
 				break;
 			}
-			case '(' : {
-				kindRet = GrammarSymbols.LPAR; 
+
+		}
+		case '<' : {
+			kindRet = GrammarSymbols.LESSERTHAN;
+			this.getNextChar();
+			if (this.currentChar == '='){
+				kindRet = GrammarSymbols.LESSEREQUALTHAN;
 				this.getNextChar();
-				break;
 			}
-			case ')' : {
-				kindRet = GrammarSymbols.RPAR; 
+			break;
+		}
+		case '>' : {
+			kindRet = GrammarSymbols.GREATERTHAN;
+			this.getNextChar();
+			if (this.currentChar == '='){
+				kindRet = GrammarSymbols.GREATEREQUALTHAN;
 				this.getNextChar();
-				break;
 			}
-			case '{' : {
-				kindRet = GrammarSymbols.LBRACKET; 
-				this.getNextChar();
-				break;
-			}
-			case '}' : {
-				kindRet = GrammarSymbols.RBRACKET; 
-				this.getNextChar();
-				break;
-			}
-			case '*' : {
-				kindRet = GrammarSymbols.MULT; 
-				this.getNextChar();
-				break;
-			}
-			case '/' : {
-				kindRet = GrammarSymbols.DIV; 
-				this.getNextChar();
-				break;
-			}
-			case '+' : {
-				kindRet = GrammarSymbols.PLUS; 
-				this.getNextChar();
-				break;
-			}
-			case '-' : {
-				kindRet = GrammarSymbols.MINUS; 
-				this.getNextChar();
-				break;
-			}
-			case ',' : {
-				kindRet = GrammarSymbols.COMMA; 
-				this.getNextChar();
-				break;
-			}
-			case '=' : {
-				kindRet = GrammarSymbols.ASSIGN;
-				this.getNextChar();
-				if (this.currentChar == '='){
-					kindRet = GrammarSymbols.EQUAL;
-				}
-				break;
-			}
-			case '!' : {
-				this.getNextChar();
-				if (this.currentChar == '='){
-					kindRet = GrammarSymbols.NOTEQUAL;
-					this.getNextChar();
-					break;
-				}
-	
-			}
-			case '<' : {
-				kindRet = GrammarSymbols.LESSERTHAN;
-				this.getNextChar();
-				if (this.currentChar == '='){
-					kindRet = GrammarSymbols.LESSEREQUALTHAN;
-				}
-				break;
-			}
-			case '>' : {
-				kindRet = GrammarSymbols.GREATERTHAN;
-				this.getNextChar();
-				if (this.currentChar == '='){
-					kindRet = GrammarSymbols.GREATEREQUALTHAN;
-				}
-			}
+		}
 		}
 
 		return kindRet;
