@@ -25,7 +25,7 @@ public class testeArquivo {
 		 */
 		
 		Parser parser = new Parser();
-		parser.parse();
+		System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
 		
 		
 	}
