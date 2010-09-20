@@ -261,11 +261,56 @@ public class Parser {
 		}
 	}
 
-	private void parseExpression() {
-		// TODO Auto-generated method stub
-		System.out.println("Falta implementar o parseExpression");
+	/**
+	 * Parse do padrão [Expression]
+	 * Expression -> ( Expression ( + | - | * | / | == | != | > | >= | < | <= ) Expression ) | Value  
+	 * @throws SyntacticException 
+	 */
+	private void parseExpression() throws SyntacticException {
+		
+		this.parseValue();
+		
+		if(	this.currentToken.getKind() == GrammarSymbols.PLUS ||
+			this.currentToken.getKind() == GrammarSymbols.MINUS ||
+			this.currentToken.getKind() == GrammarSymbols.MULT ||
+			this.currentToken.getKind() == GrammarSymbols.DIV ||
+			this.currentToken.getKind() == GrammarSymbols.EQUAL ||
+			this.currentToken.getKind() == GrammarSymbols.GREATERTHAN ||
+			this.currentToken.getKind() == GrammarSymbols.GREATEREQUALTHAN ||
+			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
+			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN)
+		{
+			this.acceptIt();
+			this.parseExpression();
+			
+		}else{
+			throw new SyntacticException("[parseExpression Erro] Era esperada uma operação",this.currentToken);
+		}
+		
 	}
 
+	/**
+	 * Parse do padrão [Value]
+	 * Value -> identifier | number | false | true
+	 * @throws SyntacticException 
+	 */
+	private void parseValue() throws SyntacticException {
+		
+		if(	this.currentToken.getKind() == GrammarSymbols.ID ||
+			this.currentToken.getKind() == GrammarSymbols.NUMBER ||
+			this.currentToken.getKind() == GrammarSymbols.FALSE ||
+			this.currentToken.getKind() == GrammarSymbols.TRUE )
+		{
+			this.acceptIt();
+			
+		}else{
+			throw new SyntacticException("[parseValue Erro] Era esperado um valor",this.currentToken);
+		}
+		
+	}
+	
+	
+	
 	/**
 	 * Parse do padrão [RHS]
 	 * RHS -> ( Expression ) | identifier ( (Arguments | empty) )
