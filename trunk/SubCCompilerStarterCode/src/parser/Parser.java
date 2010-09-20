@@ -295,6 +295,7 @@ public class Parser {
 			this.currentToken.getKind() == GrammarSymbols.MULT ||
 			this.currentToken.getKind() == GrammarSymbols.DIV ||
 			this.currentToken.getKind() == GrammarSymbols.EQUAL ||
+			this.currentToken.getKind() == GrammarSymbols.NOTEQUAL ||
 			this.currentToken.getKind() == GrammarSymbols.GREATERTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.GREATEREQUALTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
@@ -302,7 +303,7 @@ public class Parser {
 		{
 			this.acceptIt();
 		}else{
-			throw new SyntacticException("[parseOperation erro] Esperada uma opeação", this.currentToken);
+			throw new SyntacticException("[parseOperation erro] Esperada uma operação", this.currentToken);
 		}
 	}
 
