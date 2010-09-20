@@ -272,8 +272,8 @@ public class Parser {
 		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
 			this.acceptIt();
 			
-			this.parseExpression();			
-			this.parseOperation();			
+			this.parseExpression();
+			this.parseOperation();	
 			this.parseExpression();
 			
 			this.accept(GrammarSymbols.RPAR);
