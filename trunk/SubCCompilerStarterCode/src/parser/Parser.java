@@ -268,8 +268,28 @@ public class Parser {
 	 */
 	private void parseExpression() throws SyntacticException {
 		
-		this.parseValue();
+		// ( Expression ( + | - | * | / | == | != | > | >= | < | <= ) Expression )
+		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
+			this.acceptIt();
+			
+			this.parseExpression();			
+			this.parseOperation();			
+			this.parseExpression();
+			
+			this.accept(GrammarSymbols.RPAR);
+			
+		// Value
+		}else{
+			this.parseValue();
+		}
 		
+	}
+	
+	/**
+	 * Parse de uma operação
+	 * @throws SyntacticException
+	 */
+	private void parseOperation() throws SyntacticException {
 		if(	this.currentToken.getKind() == GrammarSymbols.PLUS ||
 			this.currentToken.getKind() == GrammarSymbols.MINUS ||
 			this.currentToken.getKind() == GrammarSymbols.MULT ||
@@ -278,15 +298,12 @@ public class Parser {
 			this.currentToken.getKind() == GrammarSymbols.GREATERTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.GREATEREQUALTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
-			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN)
+			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN )
 		{
 			this.acceptIt();
-			this.parseExpression();
-			
 		}else{
-			throw new SyntacticException("[parseExpression Erro] Era esperada uma operação",this.currentToken);
+			throw new SyntacticException("[parseOperation erro] Esperada uma opeação", this.currentToken);
 		}
-		
 	}
 
 	/**
@@ -298,12 +315,15 @@ public class Parser {
 		
 		if(	this.currentToken.getKind() == GrammarSymbols.ID ||
 			this.currentToken.getKind() == GrammarSymbols.NUMBER ||
+			this.currentToken.getKind() == GrammarSymbols.INT ||
+			this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
 			this.currentToken.getKind() == GrammarSymbols.FALSE ||
 			this.currentToken.getKind() == GrammarSymbols.TRUE )
 		{
 			this.acceptIt();
 			
 		}else{
+			
 			throw new SyntacticException("[parseValue Erro] Era esperado um valor",this.currentToken);
 		}
 		
