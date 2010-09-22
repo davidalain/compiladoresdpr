@@ -96,7 +96,7 @@ public class Parser {
 	private Command parseProgram() throws SyntacticException{
 		
 		Type type = this.parseType();
-		Identifier identifier = new Identifier(accept(GrammarSymbols.ID));
+		Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 
 		//declaração de variável
 		if(this.currentToken.getKind() == GrammarSymbols.SEMICOLON){
@@ -145,7 +145,7 @@ public class Parser {
 				this.currentToken.getKind() == GrammarSymbols.VOID)
 			{
 				Type type = this.parseType();
-				Identifier identifier = new Identifier(accept(GrammarSymbols.ID));
+				Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 				this.accept(GrammarSymbols.SEMICOLON);
 				
 				variables.add(new VariableDeclaration(type, identifier));
@@ -314,26 +314,28 @@ public class Parser {
 		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
 			this.acceptIt();
 			
-			this.parseExpression();
-			this.parseOperation();	
-			this.parseExpression();
+			Expression leftExpression = this.parseExpression();
+			Operator operator = this.parseOperation();	
+			Expression rightExpression = this.parseExpression();
 			
 			this.accept(GrammarSymbols.RPAR);
 			
+			return new BinaryExpression(leftExpression, operator, rightExpression);
+			
 		// Value
 		}else{
-			this.parseValue();
+			UnaryExpression unaryExpression = this.parseValue();
+			return unaryExpression;
+			
 		}
-		
-		//TODO implementar o retorno deste método
-		return null;
 	}
 	
 	/**
 	 * Parse de uma operação
 	 * @throws SyntacticException
 	 */
-	private void parseOperation() throws SyntacticException {
+	private Operator parseOperation() throws SyntacticException {
+		Operator operator;
 		if(	this.currentToken.getKind() == GrammarSymbols.PLUS ||
 			this.currentToken.getKind() == GrammarSymbols.MINUS ||
 			this.currentToken.getKind() == GrammarSymbols.MULT ||
@@ -345,10 +347,12 @@ public class Parser {
 			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN )
 		{
-			this.acceptIt();
+			operator = new Operator(this.acceptIt());
 		}else{
 			throw new SyntacticException("[parseOperation erro] Esperada uma operação", this.currentToken);
 		}
+		
+		return operator;
 	}
 
 	/**
@@ -356,19 +360,23 @@ public class Parser {
 	 * Value -> identifier | number | false | true
 	 * @throws SyntacticException 
 	 */
-	private void parseValue() throws SyntacticException {
+	private UnaryExpression parseValue() throws SyntacticException {
 		
-		if(	this.currentToken.getKind() == GrammarSymbols.ID ||
-			this.currentToken.getKind() == GrammarSymbols.NUMBER ||
-			this.currentToken.getKind() == GrammarSymbols.INT ||
-			this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
-			this.currentToken.getKind() == GrammarSymbols.FALSE ||
-			this.currentToken.getKind() == GrammarSymbols.TRUE )
+		if(	this.currentToken.getKind() == GrammarSymbols.ID){
+			return new IdentifierUnaryExpression(new Identifier(this.acceptIt()));
+			
+		}else if(this.currentToken.getKind() == GrammarSymbols.NUMBER ||
+				this.currentToken.getKind() == GrammarSymbols.INT ||
+				this.currentToken.getKind() == GrammarSymbols.DOUBLE)
 		{
-			this.acceptIt();
+			return new NumberUnaryExpression(new NumberValue(this.acceptIt()));
+			
+		}else if(this.currentToken.getKind() == GrammarSymbols.FALSE ||
+				this.currentToken.getKind() == GrammarSymbols.TRUE )
+		{
+			return new BooleanUnaryExpression(new BooleanValue(this.acceptIt()));
 			
 		}else{
-			
 			throw new SyntacticException("[parseValue Erro] Era esperado um valor",this.currentToken);
 		}
 		
@@ -385,20 +393,19 @@ public class Parser {
 		// ( Expression )
 		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
 			this.acceptIt();
-			this.parseExpression();
+			ExpressionRHS expRHS = new ExpressionRHS(this.parseExpression());
 			this.accept(GrammarSymbols.RPAR);
+			return expRHS;
 			
 		// identifier ( (Arguments | empty) )
 		}else{
 			
-			this.accept(GrammarSymbols.ID);
+			Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 			this.accept(GrammarSymbols.LPAR);
-			this.parseArguments();
+			ArrayList<Identifier> arguments = this.parseArguments();
 			this.accept(GrammarSymbols.RPAR);
-			
+			return new CallStatementRHS(new CallStatement(identifier, arguments));
 		}
-		
-		return null;
 	}
 
 	/**
@@ -488,7 +495,6 @@ public class Parser {
 
 		return new Program(commands);
 		
-		//return null; implementação que veio do professor
 	}
 
 }
