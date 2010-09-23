@@ -106,6 +106,7 @@ public class Parser {
 			Command atualCommand = null;
 			
 			//declaração de variável
+			//Type identifier ;
 			if(this.currentToken.getKind() == GrammarSymbols.SEMICOLON){
 				this.acceptIt();
 				
@@ -113,12 +114,13 @@ public class Parser {
 				atualCommand = new VariableDeclaration(type,identifier); 
 	
 			//declaração de função
+			//Type identifier ( (Parameters | empty) ) { FunctionBody }
 			}else {
 				
 				ArrayList<VariableDeclaration> parameters = null;
 				FunctionBody functionBody = null;
 				
-				// ( parametros )
+				//( (Parameters | empty) )
 				this.accept(GrammarSymbols.LPAR);
 				if(this.currentToken.getKind() != GrammarSymbols.RPAR){
 					parameters = this.parseParameters();
@@ -154,6 +156,7 @@ public class Parser {
 		ArrayList<Statement> statements = new ArrayList<Statement>();
 		
 		//declaração de variáveis no inicio do corpo da função
+		//(Type identifier ;)*
 		while( this.currentToken.getKind() == GrammarSymbols.BOOLEAN || 
 			this.currentToken.getKind() == GrammarSymbols.INT ||
 			this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
@@ -168,7 +171,6 @@ public class Parser {
 		
 		//Statements
 		statements = this.parseStatements();
-			
 		
 		return new FunctionBody(variables, statements);
 	}
@@ -193,16 +195,18 @@ public class Parser {
 		while(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
 			
 			//chamada de função ou atribuição de variável
+			//identifier (( (Arguments | empty) ) | = RHS) ;
 			if(this.currentToken.getKind() == GrammarSymbols.ID){
 				//aceitar o Token ID
 				Identifier identifier = new Identifier(this.acceptIt());
 
 				// chamada de função
+				//identifier ( ( Arguments | empty) ) ;
 				if(this.currentToken.getKind() == GrammarSymbols.LPAR){
 					
 					ArrayList<Identifier> arguments = null;
 					
-					// ( Parametros )
+					// ( ( Arguments | empty) ) ;
 					this.acceptIt();
 					if(this.currentToken.getKind() != GrammarSymbols.RPAR){
 						arguments = this.parseArguments();	
@@ -213,6 +217,7 @@ public class Parser {
 					statementsReturn.add(new CallStatement(identifier,arguments));
 					
 				// atribuição
+				// identifier = RHS ;
 				}else{
 					this.accept(GrammarSymbols.ASSIGN);
 					RHS rhs = this.parseRHS();
@@ -231,7 +236,7 @@ public class Parser {
 				ArrayList<Statement> ifStatements = null;
 				ArrayList<Statement> elseStatements = null;
 				
-				//( expressão )
+				//( Expression )
 				this.accept(GrammarSymbols.LPAR);
 				condition = this.parseExpression();
 				this.accept(GrammarSymbols.RPAR);
@@ -243,7 +248,8 @@ public class Parser {
 				}
 				this.accept(GrammarSymbols.RBRACKET);
 				
-				//else
+				//verificar else
+				//(empty | else { Statements })
 				if(this.currentToken.getKind() == GrammarSymbols.ELSE){
 					this.acceptIt();
 					
@@ -280,7 +286,7 @@ public class Parser {
 				statementsReturn.add(new WhileStatement(conditionWhile, statementsWhile));
 				
 			// Padrão return
-			// return Expression ; |
+			// return Expression ; | return ; |
 			}else if(this.currentToken.getKind() == GrammarSymbols.RETURN){
 				this.acceptIt();
 				
