@@ -257,7 +257,8 @@ public class Scanner {
 			|| pCurrentChar == ',' || pCurrentChar == '=' || pCurrentChar == '+'
 				|| pCurrentChar == '{' || pCurrentChar == '}' 	
 					|| pCurrentChar == '<' || pCurrentChar == '>' 	
-						|| pCurrentChar == '/' || pCurrentChar == '*' 	
+						|| pCurrentChar == '/' || pCurrentChar == '*'
+							|| pCurrentChar == '-' 	 	
 
 
 		){
