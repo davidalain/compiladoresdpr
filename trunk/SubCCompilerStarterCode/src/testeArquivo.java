@@ -24,8 +24,14 @@ public class testeArquivo {
 		 * }
 		 */
 		
-		Parser parser = new Parser();
-		System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
+		try{
+			Parser parser = new Parser();
+			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));	
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		
 		
 	}

@@ -41,8 +41,9 @@ public class Scanner {
 	/**
 	 * Returns the next token
 	 * @return
+	 * @throws LexicalException 
 	 */ //TODO
-	public Token getNextToken() {
+	public Token getNextToken(){
 		// Initializes the string buffer
 		// Ignores separators
 		// Clears the string buffer
@@ -64,14 +65,15 @@ public class Scanner {
 
 		try{
 			this.currentKind = this.scanToken();
+			//System.out.println("[getNextToken()] kindName: "+GrammarSymbols.getNameByKind(this.currentKind)+"\t, spelling: "+this.currentSpelling.toString());
+
+			return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
 		}
 		catch (LexicalException e){
 			e.printStackTrace();
 		}
-
-		//System.out.println("[getNextToken()] kindName: "+GrammarSymbols.getNameByKind(this.currentKind)+"\t, spelling: "+this.currentSpelling.toString());
-
-		return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
+		
+		return null;
 
 	}
 
@@ -211,7 +213,7 @@ public class Scanner {
 			int retVerificarNumeros = this.verificarNumero();
 			if(retVerificarNumeros == 0){
 				return GrammarSymbols.INT;
-			}else if(retVerificarNumeros == 1){
+			}else if(retVerificarNumeros == 2){
 				return GrammarSymbols.DOUBLE;
 			}else{
 				throw new LexicalException("ScanToken de Digitos", this.currentChar, this.line, this.column);
@@ -222,8 +224,8 @@ public class Scanner {
 			int retVerificarOutrosTokens = this.verificarOutrosTokens();
 			if (retVerificarOutrosTokens == -1){
 				throw new LexicalException("ScanToken outros Tokens", this.currentChar, this.line, this.column);
-			}
-			else {
+				
+			} else {
 				return retVerificarOutrosTokens;
 			}
 		}
@@ -314,14 +316,28 @@ public class Scanner {
 
 	/**
 	 * Verifica se o token está no padrão [digits] ou [number]
-	 *  @return	0 está no padrão [digits], 1 se está no padrão [number], -1 se houve ERRO
+	 *  @return	0 está no padrão [digits], 2 se está no padrão [number], 1 ou -1 se houve ERRO
 	 */
 	private int verificarNumero(){
 		int estado = 0;
 		while (!isSeparator(this.currentChar) && !isSpecialCharacters(this.currentChar)){
 			if(isDigit(this.currentChar)){
-				this.getNextChar();
-			} else if(this.currentChar == '.' && estado != 1){
+				
+				if(estado == 0){
+					//está lendo numero e ainda não encontrou o caractere ponto [.]
+					this.getNextChar();
+					
+				}else if(estado == 1){
+					//começou a ler numeros depois de encontrar o caractere ponto [.]
+					estado = 2;
+					this.getNextChar();
+					
+				}else{ //estado == 2
+					this.getNextChar();
+				}
+				
+			} else if(this.currentChar == '.' && estado == 0){
+				//encontrou o caractere ponto [.]
 				estado = 1;
 				this.getNextChar();
 			} else {
@@ -407,9 +423,8 @@ public class Scanner {
 			if (this.currentChar == '='){
 				kindRet = GrammarSymbols.NOTEQUAL;
 				this.getNextChar();
-				break;
 			}
-
+			break;
 		}
 		case '<' : {
 			kindRet = GrammarSymbols.LESSERTHAN;
@@ -427,6 +442,7 @@ public class Scanner {
 				kindRet = GrammarSymbols.GREATEREQUALTHAN;
 				this.getNextChar();
 			}
+			break;
 		}
 		}
 
