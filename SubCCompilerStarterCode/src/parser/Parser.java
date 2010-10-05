@@ -2,6 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 
+import scanner.LexicalException;
 import scanner.Scanner;
 import scanner.Token;
 import util.AST.AST;
@@ -54,8 +55,14 @@ public class Parser {
 	public Parser() {
 		// Initializes the scanner object
 		this.scanner = new Scanner();
-
-		this.currentToken = this.scanner.getNextToken();
+		
+		try{
+			this.currentToken = this.scanner.getNextToken();
+		}catch (LexicalException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -80,10 +87,18 @@ public class Parser {
 
 	/**
 	 * Gets next token
+	 * @throws LexicalException 
+	 * @throws SyntacticException 
 	 */
-	private String acceptIt() {
+	private String acceptIt(){
 		String spelling = this.currentToken.getSpelling();
-		this.currentToken = this.scanner.getNextToken();
+		try{
+			this.currentToken = this.scanner.getNextToken();
+		}catch (LexicalException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		return spelling;
 	}
 
