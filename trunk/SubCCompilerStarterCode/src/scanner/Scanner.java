@@ -1,12 +1,9 @@
 package scanner;
 
-import java.io.File;
-
-import compiler.Properties;
-import compiler.SubCCompiler;
-
 import parser.GrammarSymbols;
 import util.Arquivo;
+
+import compiler.Properties;
 
 /**
  * Scanner class
@@ -42,8 +39,8 @@ public class Scanner {
 	 * Returns the next token
 	 * @return
 	 * @throws LexicalException 
-	 */ //TODO
-	public Token getNextToken(){
+	 */
+	public Token getNextToken() throws LexicalException{
 		// Initializes the string buffer
 		// Ignores separators
 		// Clears the string buffer
@@ -57,24 +54,16 @@ public class Scanner {
 				this.scanSeparator();
 			}
 			catch (LexicalException e){
-				e.toString();
+				e.printStackTrace();
 			}
 		}
 
-		this.currentSpelling = new StringBuffer(""); // ou apagar o conteúdo do buffer
-
-		try{
-			this.currentKind = this.scanToken();
-			//System.out.println("[getNextToken()] kindName: "+GrammarSymbols.getNameByKind(this.currentKind)+"\t, spelling: "+this.currentSpelling.toString());
-
-			return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
-		}
-		catch (LexicalException e){
-			e.printStackTrace();
-		}
+		this.currentSpelling = new StringBuffer(""); // ou apagar o conteúdo do buffer		
 		
-		return null;
+		this.currentKind = this.scanToken();
+		//System.out.println("[getNextToken()] kindName: "+GrammarSymbols.getNameByKind(this.currentKind)+"\t, spelling: "+this.currentSpelling.toString());
 
+		return new Token(this.currentKind, this.currentSpelling.toString(), this.line, this.column);
 	}
 
 	/**
@@ -93,7 +82,7 @@ public class Scanner {
 	/**
 	 * Reads (and ignores) a separator
 	 * @throws LexicalException
-	 */ //TODO
+	 */
 	private void scanSeparator() throws LexicalException {
 		// If it is a comment line
 		if ( this.currentChar == '#' ) {
@@ -195,7 +184,7 @@ public class Scanner {
 	 * Simulates the DFA that recognizes the language described by the lexical grammar
 	 * @return
 	 * @throws LexicalException
-	 */ //TODO
+	 */
 	private int scanToken() throws LexicalException {
 		// The initial automata state is 0
 		// While loop to simulate the automata
@@ -213,8 +202,10 @@ public class Scanner {
 			int retVerificarNumeros = this.verificarNumero();
 			if(retVerificarNumeros == 0){
 				return GrammarSymbols.INT;
+				
 			}else if(retVerificarNumeros == 2){
 				return GrammarSymbols.DOUBLE;
+				
 			}else{
 				throw new LexicalException("ScanToken de Digitos", this.currentChar, this.line, this.column);
 			}
@@ -230,9 +221,9 @@ public class Scanner {
 			}
 		}
 
-		//Verificar se isso está correto
+		//Se não tiver mais caractere a ler no arquivo
+		//e também aceitar arquivo vazio.
 		return GrammarSymbols.EOT;
-
 
 	}
 
