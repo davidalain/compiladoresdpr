@@ -5,6 +5,9 @@ import util.AST.Command.FunctionBody;
 import util.AST.Command.FunctionDeclaration;
 import util.AST.Command.VariableDeclaration;
 import util.AST.Expression.BinaryExpression;
+import util.AST.Expression.BooleanUnaryExpression;
+import util.AST.Expression.IdentifierUnaryExpression;
+import util.AST.Expression.NumberUnaryExpression;
 import util.AST.RHS.CallStatementRHS;
 import util.AST.RHS.ExpressionRHS;
 import util.AST.Statement.AssignStatement;
@@ -15,6 +18,10 @@ import util.AST.Statement.IfElseStatement;
 import util.AST.Statement.PrintlnStatement;
 import util.AST.Statement.ReturnStatement;
 import util.AST.Statement.WhileStatement;
+import util.AST.Terminal.BooleanValue;
+import util.AST.Terminal.Identifier;
+import util.AST.Terminal.NumberValue;
+import util.AST.Terminal.Operator;
 
 public interface Visitor {
 	
@@ -33,18 +40,23 @@ public interface Visitor {
 	public Object visitExpressionRHS (ExpressionRHS expRHS, Object arg);
 	public Object visitCallStatementRHS (CallStatementRHS callRHS, Object arg);
 	public Object visitBinaryExpression (BinaryExpression byExp, Object arg);
+	public Object visitIdentifierUnaryExpression (IdentifierUnaryExpression idUnExp, Object arg);
+	public Object visitNumberUnaryExpression (NumberUnaryExpression numUnExp, Object arg);
+	public Object visitBooleanUnaryExpression (BooleanUnaryExpression booUnExp, Object arg);
+	public Object visitIdentifier (Identifier id, Object arg);
+	public Object visitOperator (Operator op, Object arg);
+	public Object visitNumber (NumberValue number, Object arg);
+	public Object visitBoolean (BooleanValue boo, Object arg);
 	
 	/*
 	TODO: Visit destes:
-	IdentifierUnaryExpression
-	NumberUnaryExpression
-	BooleanUnaryExpression
-	Identifier
-	Operator
-	Number
-	Boolean
+			command?
+			callstatement
+			rhs
+			expresion
+			[Type]
 	  
 	TODO: Verificar se é necessário fazer visitType
-	[Type]
+	
 	*/
 }
