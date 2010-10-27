@@ -1,5 +1,6 @@
 package util.AST.Statement;
 
+import checker.Visitor;
 import util.AST.Terminal.Identifier;
 
 /**
@@ -30,6 +31,12 @@ public class PrintlnStatement extends Statement {
 			str.append(super.getSpaces(nextLevel) + "|-" + this.variableName.toString(nextLevel));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

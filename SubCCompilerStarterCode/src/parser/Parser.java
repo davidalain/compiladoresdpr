@@ -109,7 +109,7 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private Program parseProgram() throws SyntacticException{
-		
+		// TODO
 		ArrayList<Command> commands = new ArrayList<Command>();
 		
 		//Enquanto ainda não chegou no fim do código fonte
@@ -138,7 +138,7 @@ public class Parser {
 				//( (Parameters | empty) )
 				this.accept(GrammarSymbols.LPAR);
 				if(this.currentToken.getKind() != GrammarSymbols.RPAR){
-					parameters = this.parseParameters();
+					parameters = this.parseParameters(); // david
 				}
 				this.accept(GrammarSymbols.RPAR);
 				
@@ -211,7 +211,7 @@ public class Parser {
 			
 			//chamada de função ou atribuição de variável
 			//identifier (( (Arguments | empty) ) | = RHS) ;
-			if(this.currentToken.getKind() == GrammarSymbols.ID){
+			if(this.currentToken.getKind() == GrammarSymbols.ID) {
 				//aceitar o Token ID
 				Identifier identifier = new Identifier(this.acceptIt());
 
@@ -393,7 +393,7 @@ public class Parser {
 			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
 			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN )
 		{
-			operator = new Operator(this.acceptIt());
+			operator = new Operator(this.acceptIt());// aceita e retorna o spelling
 		}else{
 			throw new SyntacticException("[parseOperation erro] Esperada uma operação", this.currentToken);
 		}

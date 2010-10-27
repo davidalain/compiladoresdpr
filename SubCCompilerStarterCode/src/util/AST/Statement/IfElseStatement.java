@@ -2,6 +2,8 @@ package util.AST.Statement;
 
 import java.util.ArrayList;
 
+import checker.Visitor;
+
 import util.AST.Expression.Expression;
 
 /**
@@ -60,6 +62,12 @@ public class IfElseStatement extends Statement {
 			}
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
