@@ -210,7 +210,7 @@ public class Scanner {
 				throw new LexicalException("ScanToken de Digitos", this.currentChar, this.line, this.column);
 			}
 		}
-		//DFA de outros tokens (por exemplo :  ;)
+		//DFA de outros tokens (por exemplo:  ;)
 		else if (isGraphic(this.currentChar)){
 			int retVerificarOutrosTokens = this.verificarOutrosTokens();
 			if (retVerificarOutrosTokens == -1){
@@ -236,7 +236,7 @@ public class Scanner {
 
 		while (!isSeparator(this.currentChar) && !isSpecialCharacters(this.currentChar)){
 			if(isLetter(this.currentChar) || isDigit(this.currentChar)){
-				this.getNextChar();
+				this.getNextChar(); 
 			}
 			else {
 				return false;

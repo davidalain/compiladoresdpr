@@ -1,5 +1,7 @@
 package util.AST;
 
+import checker.Visitor;
+
 /**
  * AST class
  * @version 2010-september-04
@@ -19,5 +21,7 @@ public abstract class AST {
 	}
 	
 	public abstract String toString(int level);
+	
+	public abstract Object visit(Visitor v, Object arg);
 	
 }

@@ -31,7 +31,7 @@ public class testeArquivo {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+		System.out.println("FIM");
 		
 		
 	}

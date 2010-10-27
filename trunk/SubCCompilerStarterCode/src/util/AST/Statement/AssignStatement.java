@@ -1,5 +1,6 @@
 package util.AST.Statement;
 
+import checker.Visitor;
 import util.AST.RHS.RHS;
 import util.AST.Terminal.Identifier;
 
@@ -40,6 +41,12 @@ public class AssignStatement extends Statement {
 			str.append(super.getSpaces(nextLevel) + "|-" + this.rightHandStatement.toString(nextLevel));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
