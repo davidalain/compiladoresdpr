@@ -1,5 +1,6 @@
 package util.AST.Command;
 
+import checker.Visitor;
 import util.AST.Terminal.Identifier;
 import util.AST.Terminal.Type;
 
@@ -42,6 +43,11 @@ public class VariableDeclaration extends Command {
 			str.append(this.variableName.toString(nextLevel));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitVariableDeclaration(this, arg);
 	}
 	
 }

@@ -22,6 +22,7 @@ import util.AST.Terminal.BooleanValue;
 import util.AST.Terminal.Identifier;
 import util.AST.Terminal.NumberValue;
 import util.AST.Terminal.Operator;
+import util.AST.Terminal.Type;
 
 public interface Visitor {
 	
@@ -45,8 +46,9 @@ public interface Visitor {
 	public Object visitBooleanUnaryExpression (BooleanUnaryExpression booUnExp, Object arg);
 	public Object visitIdentifier (Identifier id, Object arg);
 	public Object visitOperator (Operator op, Object arg);
-	public Object visitNumber (NumberValue number, Object arg);
-	public Object visitBoolean (BooleanValue boo, Object arg);
+	public Object visitNumberValue (NumberValue number, Object arg);
+	public Object visitBooleanValue (BooleanValue boo, Object arg);
+	public Object visitType (Type type, Object arg);
 	
 	/*
 	TODO: Visit destes:

@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.Visitor;
 import util.AST.Terminal.BooleanValue;
 
 /**
@@ -30,6 +31,11 @@ public class BooleanUnaryExpression extends UnaryExpression {
 			str.append(super.getSpaces(nextLevel)+"|-"+this.booleanValue.toString(level));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitBooleanUnaryExpression(this, arg);
 	}
 
 }

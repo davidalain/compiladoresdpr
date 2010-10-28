@@ -2,6 +2,8 @@ package util.AST;
 
 import java.util.ArrayList;
 
+import checker.Visitor;
+
 import util.AST.Command.Command;
 
 /**
@@ -35,6 +37,11 @@ public class Program extends AST {
 			}
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitProgram(this, arg);
 	}
 	
 }
