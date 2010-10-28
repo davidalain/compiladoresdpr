@@ -1,5 +1,6 @@
 package util.AST.RHS;
 
+import checker.Visitor;
 import util.AST.Expression.Expression;
 
 /**
@@ -27,6 +28,11 @@ public class ExpressionRHS extends RHS {
 			return this.expression.toString(level);
 		}
 		return null;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitExpressionRHS(this, arg);
 	}
 	
 }

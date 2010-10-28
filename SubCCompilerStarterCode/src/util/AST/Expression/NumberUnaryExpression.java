@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.Visitor;
 import util.AST.Terminal.NumberValue;
 
 /**
@@ -30,6 +31,11 @@ public class NumberUnaryExpression extends UnaryExpression {
 			str.append(super.getSpaces(nextLevel)+"|-"+this.numberValue.toString(level));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitNumberUnaryExpression(this, arg);
 	}
 	
 }

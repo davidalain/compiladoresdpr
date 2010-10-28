@@ -51,8 +51,7 @@ public class CallStatement extends Statement {
 
 	@Override
 	public Object visit(Visitor v, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return v.visitCallStatement(this, arg);
 	}
 	
 }

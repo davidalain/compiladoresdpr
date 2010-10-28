@@ -22,6 +22,7 @@ import util.AST.Terminal.BooleanValue;
 import util.AST.Terminal.Identifier;
 import util.AST.Terminal.NumberValue;
 import util.AST.Terminal.Operator;
+import util.AST.Terminal.Type;
 import util.symbolsTable.IdentificationTable;
 
 public final class Checker implements Visitor {
@@ -38,7 +39,7 @@ public final class Checker implements Visitor {
 		return null;
 	}
 
-	public Object visitBoolean(BooleanValue boo, Object arg) {
+	public Object visitBooleanValue(BooleanValue boo, Object arg) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -100,7 +101,7 @@ public final class Checker implements Visitor {
 		return null;
 	}
 
-	public Object visitNumber(NumberValue number, Object arg) {
+	public Object visitNumberValue(NumberValue number, Object arg) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -137,6 +138,11 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitWhileStatement(WhileStatement stat, Object arg) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object visitType(Type type, Object arg) {
 		// TODO Auto-generated method stub
 		return null;
 	}

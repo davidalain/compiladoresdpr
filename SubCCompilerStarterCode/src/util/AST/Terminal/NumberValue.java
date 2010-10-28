@@ -1,5 +1,7 @@
 package util.AST.Terminal;
 
+import checker.Visitor;
+
 /**
  * AST class
  * @version 2010-september-04
@@ -16,6 +18,11 @@ public class NumberValue extends Terminal {
 	@Override
 	public String toString(int level) {
 		return "NumberValue(" + this.spelling + ")\n";
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitNumberValue(this, arg);
 	}	
 
 }

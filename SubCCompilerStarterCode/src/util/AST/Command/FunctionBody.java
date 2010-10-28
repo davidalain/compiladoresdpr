@@ -2,6 +2,8 @@ package util.AST.Command;
 
 import java.util.ArrayList;
 
+import checker.Visitor;
+
 import util.AST.AST;
 import util.AST.Statement.Statement;
 
@@ -47,6 +49,11 @@ public class FunctionBody extends AST {
 			}
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitFunctionBody(this, arg);
 	}
 	
 }

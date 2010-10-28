@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.Visitor;
 import util.AST.Terminal.Identifier;
 
 /**
@@ -30,6 +31,11 @@ public class IdentifierUnaryExpression extends UnaryExpression {
 			str.append(super.getSpaces(nextLevel)+"|-"+this.variableName.toString(level));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitIdentifierUnaryExpression(this, arg);
 	}
 	
 }

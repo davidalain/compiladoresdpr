@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.Visitor;
 import util.AST.Terminal.Operator;
 
 /**
@@ -48,6 +49,11 @@ public class BinaryExpression extends Expression {
 			str.append(super.getSpaces(nextLevel) + "|-" + this.rightExpression.toString(nextLevel));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitBinaryExpression(this, arg);
 	}
 	
 }

@@ -1,5 +1,6 @@
 package util.AST.RHS;
 
+import checker.Visitor;
 import util.AST.Statement.CallStatement;
 
 /**
@@ -27,6 +28,12 @@ public class CallStatementRHS extends RHS {
 			return this.functionCall.toString(level);
 		}
 		return null;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+			
+		return v.visitCallStatementRHS(this, arg);
 	}
 	
 }

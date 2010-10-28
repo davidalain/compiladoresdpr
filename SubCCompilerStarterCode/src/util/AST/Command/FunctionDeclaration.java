@@ -2,6 +2,8 @@ package util.AST.Command;
 
 import java.util.ArrayList;
 
+import checker.Visitor;
+
 import util.AST.Terminal.Identifier;
 import util.AST.Terminal.Type;
 
@@ -67,6 +69,11 @@ public class FunctionDeclaration extends Command {
 			str.append(this.functionBody.toString(nextLevel));
 		}
 		return str.toString();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitFunctionDeclaration(this, arg);
 	}
 	
 }

@@ -66,8 +66,7 @@ public class IfElseStatement extends Statement {
 
 	@Override
 	public Object visit(Visitor v, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return v.visitIfElseStatement(this, arg);
 	}
 
 }

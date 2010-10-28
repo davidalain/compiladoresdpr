@@ -1,5 +1,7 @@
 package util.AST.Terminal;
 
+import checker.Visitor;
+
 /**
  * AST class
  * @version 2010-september-04
@@ -16,6 +18,11 @@ public class BooleanValue extends Terminal {
 	@Override
 	public String toString(int level) {
 		return "Boolean(" + this.spelling + ")\n";
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitBooleanValue(this, arg);
 	}
 
 }
