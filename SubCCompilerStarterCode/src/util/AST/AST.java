@@ -1,5 +1,6 @@
 package util.AST;
 
+import checker.SemanticException;
 import checker.Visitor;
 
 /**
@@ -22,6 +23,6 @@ public abstract class AST {
 	
 	public abstract String toString(int level);
 	
-	public abstract Object visit(Visitor v, Object arg);
+	public abstract Object visit(Visitor v, Object arg) throws SemanticException;
 	
 }

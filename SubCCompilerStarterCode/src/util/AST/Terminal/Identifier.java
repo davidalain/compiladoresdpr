@@ -1,5 +1,6 @@
 package util.AST.Terminal;
 
+import util.AST.AST;
 import checker.Visitor;
 
 /**
@@ -10,7 +11,7 @@ import checker.Visitor;
  * @email gustavohpcarvalho@ecomp.poli.br
  */
 public class Identifier extends Terminal {
-
+	
 	public Identifier(String spelling) {
 		super(spelling);
 	}

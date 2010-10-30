@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.SemanticException;
 import checker.Visitor;
 import util.AST.Terminal.Operator;
 
@@ -52,7 +53,7 @@ public class BinaryExpression extends Expression {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitBinaryExpression(this, arg);
 	}
 	

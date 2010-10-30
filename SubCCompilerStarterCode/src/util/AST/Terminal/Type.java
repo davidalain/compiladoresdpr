@@ -23,6 +23,6 @@ public class Type extends Terminal {
 	@Override
 	public Object visit(Visitor v, Object arg) {
 		return v.visitType(this,arg);
-	}	
-
+	}
+	
 }

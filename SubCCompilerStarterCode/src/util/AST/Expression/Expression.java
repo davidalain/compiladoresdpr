@@ -1,6 +1,7 @@
 package util.AST.Expression;
 
 import util.AST.AST;
+import util.AST.Terminal.Type;
 
 /**
  * AST class
@@ -9,4 +10,7 @@ import util.AST.AST;
  * @author Gustavo H P Carvalho
  * @email gustavohpcarvalho@ecomp.poli.br
  */
-public abstract class Expression extends AST {}
+public abstract class Expression extends AST {
+	public Type type;
+	
+}
