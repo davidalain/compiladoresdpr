@@ -26,13 +26,13 @@ import util.AST.Terminal.Type;
 
 public interface Visitor {
 	
-	public Object visitProgram (Program prog, Object arg);
+	public Object visitProgram (Program prog, Object arg) throws SemanticException;
 	public Object visitVariableDeclaration (VariableDeclaration decl, Object arg) throws SemanticException;
 	public Object visitFunctionDeclaration (FunctionDeclaration decl, Object arg) throws SemanticException;
 	public Object visitFunctionBody (FunctionBody fbody, Object arg) throws SemanticException;
 	public Object visitCallStatement (CallStatement stat, Object arg) throws SemanticException;
 	public Object visitAssignStatement (AssignStatement stat, Object arg) throws SemanticException;
-	public Object visitIfElseStatement (IfElseStatement stat, Object arg);
+	public Object visitIfElseStatement (IfElseStatement stat, Object arg) throws SemanticException;
 	public Object visitWhileStatement (WhileStatement stat, Object arg) throws SemanticException;
 	public Object visitReturnStatement (ReturnStatement stat, Object arg) throws SemanticException;
 	public Object visitBreakStatement (BreakStatement stat, Object arg) throws SemanticException;

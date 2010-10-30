@@ -3,6 +3,7 @@ package checker;
 import java.util.ArrayList;
 
 import util.AST.Program;
+import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
 import util.AST.Command.FunctionDeclaration;
 import util.AST.Command.VariableDeclaration;
@@ -34,16 +35,23 @@ public final class Checker implements Visitor {
 	private IdentificationTable idTable;
 
 	public Object visitAssignStatement(AssignStatement stat, Object arg) throws SemanticException {
+		
+		/*
 		Type variavel = (Type) stat.getVariableName().visit(this, arg);
 		if (!idTable.containsKey(variavel.spelling)){
 			throw new SemanticException("Variavel não foi declarada");
 		}
+		
+		this.idTable.retrieve(stat.getVariableName().getSpelling());
+		
 		Type atribuicao = (Type) stat.getRightHandStatement().visit(this, arg);
 		// TODO checar linha abaixo
 		if (!variavel.equals(atribuicao)){
 			throw new SemanticException("A expressão não é do mesmo tipo da variavel");
 		}
+		*/
 		return null;
+		
 	}
 
 	public Object visitBinaryExpression(BinaryExpression byExp, Object arg) throws SemanticException {
@@ -60,14 +68,13 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitBooleanValue(BooleanValue boo, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Type(boo.getSpelling());
 	}
 
 	public Object visitBooleanUnaryExpression(BooleanUnaryExpression booUnExp,
 			Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return booUnExp.getBooleanValue().visit(this, arg);
 	}
 
 	public Object visitBreakStatement(BreakStatement stat, Object arg) throws SemanticException {
@@ -155,7 +162,7 @@ public final class Checker implements Visitor {
 		if(this.idTable.containsKey(nomeFunc)){
 			throw new SemanticException("Identificador "+nomeFunc+" já foi declarado");
 		}
-		
+
 		this.idTable.enter(nomeFunc, decl.getFunctionName());
 		this.idTable.openScope();
 
@@ -178,7 +185,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitIdentifier(Identifier id, Object arg) {
-
+		//TODO implementar
 		return null;
 	}
 
@@ -188,11 +195,25 @@ public final class Checker implements Visitor {
 		return null;
 	}
 
-	public Object visitIfElseStatement(IfElseStatement stat, Object arg) {
-		Expression condicao = stat.getCondition();
+	public Object visitIfElseStatement(IfElseStatement stat, Object arg) throws SemanticException {
+		Type condicao = (Type) stat.getCondition().visit(this, arg);
+		if (!condicao.getSpelling().equals("boolean")){
+			throw new SemanticException("Condicao do if deve ser boolean");
+		}
+		ArrayList<Statement> ifStats = stat.getIfStatements();
+		ArrayList<Statement> elseStats = stat.getElseStatements();
+		this.idTable.openScope();
+		for (Statement s: ifStats){
+			s.visit(this, arg);
+		}
+		this.idTable.closeScope();
 
 		this.idTable.openScope();
+		for (Statement s: elseStats){
+			s.visit(this, arg);
+		}
 		this.idTable.closeScope();
+
 		return null;
 	}
 
@@ -238,7 +259,7 @@ public final class Checker implements Visitor {
 		if ( operador.equals(">") || operador.equals(">=") 
 				|| operador.equals("<") || operador.equals("<=")
 				|| operador.equals("==") || operador.equals("!=")) {
-		
+
 			retorno = new Type("boolean");
 		}
 
@@ -251,8 +272,16 @@ public final class Checker implements Visitor {
 		return null;
 	}
 
-	public Object visitProgram(Program prog, Object arg) {
-		// TODO Auto-generated method stub
+	public Object visitProgram(Program prog, Object arg) throws SemanticException {
+
+		ArrayList<Command> comandos = prog.getCommands();
+		for (Command c: comandos){
+			c.visit(this, arg);
+		}
+		FunctionDeclaration funcaoMain = (FunctionDeclaration) idTable.retrieve("main");
+		if ( (funcaoMain == null) || !(funcaoMain.getReturnType().getSpelling().equals("void"))){
+			throw new SemanticException("O código deve ter uma função void main()");
+		}
 		return null;
 	}
 
@@ -261,9 +290,16 @@ public final class Checker implements Visitor {
 		FunctionDeclaration funcao = (FunctionDeclaration)arg;
 		Type tipoRetornoFuncao = funcao.getReturnType();
 		Type tipoRetornoStatement = (Type) stat.getReturnExpression().visit(this, arg);
-		if (!tipoRetornoFuncao.equals(tipoRetornoStatement)){
-			throw new SemanticException("O tipo de retorno é incompatível");
+		
+		if (!tipoRetornoFuncao.getSpelling().equals("void")){
+			if (!tipoRetornoFuncao.equals(tipoRetornoStatement)){
+				throw new SemanticException("O tipo de retorno é incompatível");
+			}	
 		}
+		else if(tipoRetornoStatement!= null){
+			throw new SemanticException("O tipo de retorno é incompatível com void");
+		}
+		
 		return null;
 	}
 
@@ -275,17 +311,16 @@ public final class Checker implements Visitor {
 		}else{
 			throw new SemanticException("Variável ["+nomeVar+"] já foi declarada");
 		}
+
 		Type tipoVariavel = decl.getType();
 		if (tipoVariavel.getSpelling().equals("void")){
 			throw new SemanticException("O tipo void só pode ser usado em declaração de função");
 		}
-		
-		
+
 		return null;
 	}
 
 	public Object visitWhileStatement(WhileStatement stat, Object arg) throws SemanticException {
-		// TODO Auto-generated method stub
 		Type tipoCondicao = (Type) stat.getCondition().visit(this, arg);
 		if (!tipoCondicao.getSpelling().equals("boolean")){
 			throw new SemanticException("Condicao do while deve ser boolean");
@@ -293,7 +328,7 @@ public final class Checker implements Visitor {
 		ArrayList<Statement> statWhile = stat.getStatements();
 		for (Statement s : statWhile){
 			s.visit(this, stat);
-			
+
 		}
 		return null;
 	}
