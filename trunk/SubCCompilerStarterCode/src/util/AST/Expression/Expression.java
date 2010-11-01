@@ -11,6 +11,16 @@ import util.AST.Terminal.Type;
  * @email gustavohpcarvalho@ecomp.poli.br
  */
 public abstract class Expression extends AST {
-	public Type type;
+	private Type type;
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+	
+	
 	
 }

@@ -1,12 +1,9 @@
 # Test program
 
-int a;
-int b;
-int c;
-
-void f(){
-	a = (2);
-	b = (3);
-	c = (4);
-	c = ((a + b));
+int latro (){
+	
 }
+
+
+
+

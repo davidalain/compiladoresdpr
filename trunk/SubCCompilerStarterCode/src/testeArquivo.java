@@ -1,9 +1,11 @@
+import checker.Checker;
 import parser.GrammarSymbols;
 import parser.Parser;
 import parser.SyntacticException;
 import scanner.Scanner;
 import scanner.Token;
 import util.Arquivo;
+import util.AST.Program;
 
 
 public class testeArquivo {
@@ -26,7 +28,12 @@ public class testeArquivo {
 		
 		try{
 			Parser parser = new Parser();
-			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));	
+			//Program prog = (Program) parser.parse();
+			//Checker checker = new Checker();
+			//checker.check(prog);
+			
+			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
+			
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

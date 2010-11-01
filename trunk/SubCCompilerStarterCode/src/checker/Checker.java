@@ -2,6 +2,8 @@ package checker;
 
 import java.util.ArrayList;
 
+import parser.Parser;
+
 import util.AST.Program;
 import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
@@ -34,33 +36,45 @@ public final class Checker implements Visitor {
 
 	private IdentificationTable idTable;
 
+	public Checker(){
+		idTable = new IdentificationTable();
+
+	}
+	public void check(Program prog){
+		try {
+			prog.visit(this, null);
+		} catch (SemanticException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+
 	public Object visitAssignStatement(AssignStatement stat, Object arg) throws SemanticException {
-		
-		/*
-		Type variavel = (Type) stat.getVariableName().visit(this, arg);
-		if (!idTable.containsKey(variavel.spelling)){
+
+		Type tipoVariavel = (Type) stat.getVariableName().visit(this, arg);
+		if (!idTable.containsKey(stat.getVariableName().getSpelling())){
 			throw new SemanticException("Variavel não foi declarada");
 		}
-		
-		this.idTable.retrieve(stat.getVariableName().getSpelling());
-		
-		Type atribuicao = (Type) stat.getRightHandStatement().visit(this, arg);
-		// TODO checar linha abaixo
-		if (!variavel.equals(atribuicao)){
+		Type tipoAtribuicao = (Type) stat.getRightHandStatement().visit(this, arg);
+
+		if (!tipoVariavel.equals(tipoAtribuicao)){
 			throw new SemanticException("A expressão não é do mesmo tipo da variavel");
 		}
-		*/
+
 		return null;
-		
+
 	}
 
 	public Object visitBinaryExpression(BinaryExpression byExp, Object arg) throws SemanticException {
 
 		Type expEsq = (Type)byExp.getLeftExpression().visit(this, arg);
 		Type expDir = (Type)byExp.getRightExpression().visit(this, arg);
-		if (!expDir.equals(expEsq)){
+		if (!expDir.getSpelling().equals(expEsq.getSpelling())){
 			throw new SemanticException("Operandos com tipos diferentes");
 		}
+
 
 		Type operador = (Type) byExp.getOperator().visit(this, expDir);
 
@@ -73,7 +87,7 @@ public final class Checker implements Visitor {
 
 	public Object visitBooleanUnaryExpression(BooleanUnaryExpression booUnExp,
 			Object arg) {
-		
+
 		return booUnExp.getBooleanValue().visit(this, arg);
 	}
 
@@ -114,9 +128,9 @@ public final class Checker implements Visitor {
 		return funcao.getReturnType();
 	}
 
-	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) throws SemanticException {
+
+		return callRHS.getFunctionCall().visit(this, arg);
 	}
 
 	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {
@@ -128,8 +142,12 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitExpressionRHS(ExpressionRHS expRHS, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Type tipo = expRHS.getExpression().getType();
+		if (tipo == null){
+			return null;
+		}
+		return tipo;
 	}
 
 	public Object visitFunctionBody(FunctionBody fbody, Object arg) throws SemanticException {
@@ -137,9 +155,6 @@ public final class Checker implements Visitor {
 		ArrayList<VariableDeclaration> variaveisFuncBody = fbody.getVariables();
 		for (VariableDeclaration vd : variaveisFuncBody){
 			String nomeVariavel = vd.getIdentifier().getSpelling();
-			if(this.idTable.containsKey(nomeVariavel)){
-				throw new SemanticException("Variável ["+nomeVariavel+"] já foi declarada");
-			}
 			this.idTable.enter(nomeVariavel, vd);
 		}
 
@@ -159,25 +174,25 @@ public final class Checker implements Visitor {
 	public Object visitFunctionDeclaration(FunctionDeclaration decl, Object arg) throws SemanticException {
 
 		String nomeFunc = decl.getFunctionName().getSpelling();
-		if(this.idTable.containsKey(nomeFunc)){
-			throw new SemanticException("Identificador "+nomeFunc+" já foi declarado");
-		}
-
-		this.idTable.enter(nomeFunc, decl.getFunctionName());
+		this.idTable.enter(nomeFunc, decl);
 		this.idTable.openScope();
 
 		ArrayList<VariableDeclaration> parametros = decl.getParameters();
-		for (VariableDeclaration vd : parametros){
+		if (parametros != null){
+			for (VariableDeclaration vd : parametros){
 
-			String nomeParametro = vd.getIdentifier().getSpelling();
-			if(this.idTable.containsKey(nomeParametro)){
-				throw new SemanticException("Identificador "+nomeParametro+" já foi declarado");
+				String nomeParametro = vd.getIdentifier().getSpelling();
+				if(this.idTable.containsKey(nomeParametro)){
+					throw new SemanticException("Identificador "+nomeParametro+" já foi declarado");
+				}
+
+				this.idTable.enter(nomeParametro, decl);
 			}
-
-			this.idTable.enter(nomeParametro, decl);
 		}
 
-		decl.getFunctionBody().visit(this, decl);
+		if (decl.getFunctionBody() != null){
+			decl.getFunctionBody().visit(this, decl);
+		}
 
 		this.idTable.closeScope();
 
@@ -185,14 +200,17 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitIdentifier(Identifier id, Object arg) {
-		//TODO implementar
-		return null;
+		VariableDeclaration retorno = (VariableDeclaration) idTable.retrieve(id.getSpelling());
+		if (retorno == null){
+			return null;
+		}
+		return retorno.getType();
+
 	}
 
 	public Object visitIdentifierUnaryExpression(
 			IdentifierUnaryExpression idUnExp, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return idUnExp.getVariableName().visit(this, arg);
 	}
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg) throws SemanticException {
@@ -218,14 +236,19 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitNumberValue(NumberValue number, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		if (number.getSpelling().contains(".")){
+			return new Type("double");
+		}
+		else{
+			return new Type("int");
+		}
+
 	}
 
 	public Object visitNumberUnaryExpression(NumberUnaryExpression numUnExp,
 			Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return numUnExp.getNumberValue().visit(this, arg);
+
 	}
 
 	public Object visitOperator(Operator op, Object arg) throws SemanticException {
@@ -235,7 +258,7 @@ public final class Checker implements Visitor {
 		Type retorno = tipo;
 
 		if(operador.equals("+") || operador.equals("-") || operador.equals("*") || operador.equals("/") ){
-			if (!(tipo.equals("int") || tipo.equals("double"))){
+			if (!(tipo.equals(new Type("int")) || tipo.equals(new Type("double")))){
 				throw new SemanticException("Operação permitida apenas com int ou double");
 			}
 
@@ -243,7 +266,7 @@ public final class Checker implements Visitor {
 		}
 
 		if (operador.equals("==") || operador.equals("!=") ) {
-			if (!(tipo.equals("int") || tipo.equals("double") || tipo.equals("boolean"))){
+			if (!(tipo.equals(new Type("int")) || tipo.equals(new Type("double")) || tipo.equals(new Type("boolean")))){
 				throw new SemanticException("Operação permitida apenas com int,double ou boolean");
 			}
 		}
@@ -251,7 +274,7 @@ public final class Checker implements Visitor {
 
 		if ( operador.equals(">") || operador.equals(">=") 
 				|| operador.equals("<") || operador.equals("<=")) {
-			if (!(tipo.equals("int") || tipo.equals("double"))){
+			if (!(tipo.equals(new Type("int")) || tipo.equals(new Type("double")))){
 				throw new SemanticException("Operação permitida apenas com int,double");
 			}
 		}
@@ -268,8 +291,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitPrintlnStatement(PrintlnStatement stat, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return stat.getVariableName().visit(this, arg);
 	}
 
 	public Object visitProgram(Program prog, Object arg) throws SemanticException {
@@ -289,29 +311,38 @@ public final class Checker implements Visitor {
 
 		FunctionDeclaration funcao = (FunctionDeclaration)arg;
 		Type tipoRetornoFuncao = funcao.getReturnType();
-		Type tipoRetornoStatement = (Type) stat.getReturnExpression().visit(this, arg);
-		
+		Expression retorno = stat.getReturnExpression();
+
+		//se (return ;) e (tipo != void) exceção
+		if (retorno == null){
+			if (!tipoRetornoFuncao.getSpelling().equals("void")){
+				throw new SemanticException("O tipo de retorno é incompatível");
+			}
+			else {
+				return new Type("void");
+			}
+		}
+
+		Type tipoRetornoStatement = (Type) retorno.visit(this, arg);
+
 		if (!tipoRetornoFuncao.getSpelling().equals("void")){
-			if (!tipoRetornoFuncao.equals(tipoRetornoStatement)){
+			if (!tipoRetornoFuncao.getSpelling().equals(tipoRetornoStatement.getSpelling())){
 				throw new SemanticException("O tipo de retorno é incompatível");
 			}	
 		}
-		else if(tipoRetornoStatement!= null){
-			throw new SemanticException("O tipo de retorno é incompatível com void");
+		else {
+			throw new SemanticException("O tipo de retorno é incompatível");
+			
 		}
 		
-		return null;
+
+		return tipoRetornoStatement;
 	}
 
 	public Object visitVariableDeclaration(VariableDeclaration decl, Object arg) throws SemanticException {
+
 		String nomeVar = decl.getIdentifier().getSpelling();
-
-		if(!idTable.containsKey(nomeVar)){
-			idTable.enter(nomeVar ,decl);
-		}else{
-			throw new SemanticException("Variável ["+nomeVar+"] já foi declarada");
-		}
-
+		idTable.enter(nomeVar ,decl);
 		Type tipoVariavel = decl.getType();
 		if (tipoVariavel.getSpelling().equals("void")){
 			throw new SemanticException("O tipo void só pode ser usado em declaração de função");
@@ -322,7 +353,7 @@ public final class Checker implements Visitor {
 
 	public Object visitWhileStatement(WhileStatement stat, Object arg) throws SemanticException {
 		Type tipoCondicao = (Type) stat.getCondition().visit(this, arg);
-		if (!tipoCondicao.getSpelling().equals("boolean")){
+		if (!tipoCondicao.equals(new Type("boolean"))){
 			throw new SemanticException("Condicao do while deve ser boolean");
 		}
 		ArrayList<Statement> statWhile = stat.getStatements();
@@ -334,8 +365,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitType(Type type, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 }

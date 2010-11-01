@@ -1,0 +1,12 @@
+# Test program
+
+int a;
+
+void c;
+boolean d;
+
+int t() {
+	int x1;
+	int x2;
+	
+}

@@ -39,7 +39,7 @@ public interface Visitor {
 	public Object visitContinueStatement (ContinueStatement stat, Object arg) throws SemanticException;
 	public Object visitPrintlnStatement (PrintlnStatement stat, Object arg);
 	public Object visitExpressionRHS (ExpressionRHS expRHS, Object arg);
-	public Object visitCallStatementRHS (CallStatementRHS callRHS, Object arg);
+	public Object visitCallStatementRHS (CallStatementRHS callRHS, Object arg) throws SemanticException;
 	public Object visitBinaryExpression (BinaryExpression byExp, Object arg) throws SemanticException;
 	public Object visitIdentifierUnaryExpression (IdentifierUnaryExpression idUnExp, Object arg);
 	public Object visitNumberUnaryExpression (NumberUnaryExpression numUnExp, Object arg);
