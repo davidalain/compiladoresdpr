@@ -2,6 +2,7 @@ package util.AST.Command;
 
 import java.util.ArrayList;
 
+import checker.SemanticException;
 import checker.Visitor;
 
 import util.AST.Terminal.Identifier;
@@ -72,7 +73,7 @@ public class FunctionDeclaration extends Command {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitFunctionDeclaration(this, arg);
 	}
 	

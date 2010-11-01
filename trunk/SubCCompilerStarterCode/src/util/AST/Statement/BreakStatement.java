@@ -1,5 +1,6 @@
 package util.AST.Statement;
 
+import checker.SemanticException;
 import checker.Visitor;
 
 /**
@@ -17,7 +18,7 @@ public class BreakStatement extends Statement {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitBreakStatement(this, arg);
 	}
 	

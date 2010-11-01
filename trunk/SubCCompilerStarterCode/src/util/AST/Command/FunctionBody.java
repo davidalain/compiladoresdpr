@@ -2,6 +2,7 @@ package util.AST.Command;
 
 import java.util.ArrayList;
 
+import checker.SemanticException;
 import checker.Visitor;
 
 import util.AST.AST;
@@ -52,7 +53,7 @@ public class FunctionBody extends AST {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitFunctionBody(this, arg);
 	}
 	

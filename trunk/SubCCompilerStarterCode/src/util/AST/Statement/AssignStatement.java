@@ -1,5 +1,6 @@
 package util.AST.Statement;
 
+import checker.SemanticException;
 import checker.Visitor;
 import util.AST.RHS.RHS;
 import util.AST.Terminal.Identifier;
@@ -44,7 +45,7 @@ public class AssignStatement extends Statement {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitAssignStatement(this, arg);
 	}
 	
