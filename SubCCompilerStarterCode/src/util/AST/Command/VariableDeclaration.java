@@ -1,5 +1,6 @@
 package util.AST.Command;
 
+import checker.SemanticException;
 import checker.Visitor;
 import util.AST.Terminal.Identifier;
 import util.AST.Terminal.Type;
@@ -46,7 +47,7 @@ public class VariableDeclaration extends Command {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitVariableDeclaration(this, arg);
 	}
 	

@@ -2,6 +2,7 @@ package util.AST;
 
 import java.util.ArrayList;
 
+import checker.SemanticException;
 import checker.Visitor;
 
 import util.AST.Command.Command;
@@ -40,7 +41,7 @@ public class Program extends AST {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitProgram(this, arg);
 	}
 	
