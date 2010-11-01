@@ -1,6 +1,8 @@
 package util.AST.Terminal;
 
 import util.AST.AST;
+import util.AST.Command.Command;
+import checker.SemanticException;
 import checker.Visitor;
 
 /**
@@ -12,6 +14,8 @@ import checker.Visitor;
  */
 public class Identifier extends Terminal {
 	
+	private Command noDeclaracao;
+	
 	public Identifier(String spelling) {
 		super(spelling);
 	}
@@ -22,8 +26,18 @@ public class Identifier extends Terminal {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitIdentifier(this, arg);
-	}	
+	}
+
+	public Command getNoDeclaracao() {
+		return noDeclaracao;
+	}
+
+	public void setNoDeclaracao(Command noDeclaracao) {
+		this.noDeclaracao = noDeclaracao;
+	}
+
+
 
 }

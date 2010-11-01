@@ -1,5 +1,6 @@
 package util.AST.RHS;
 
+import checker.SemanticException;
 import checker.Visitor;
 import util.AST.Expression.Expression;
 
@@ -31,7 +32,7 @@ public class ExpressionRHS extends RHS {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitExpressionRHS(this, arg);
 	}
 	

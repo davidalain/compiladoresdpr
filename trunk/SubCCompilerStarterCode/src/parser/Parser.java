@@ -109,7 +109,6 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private Program parseProgram() throws SyntacticException{
-		// TODO
 		ArrayList<Command> commands = new ArrayList<Command>();
 		
 		//Enquanto ainda não chegou no fim do código fonte

@@ -1,5 +1,6 @@
 package util.AST.Expression;
 
+import checker.SemanticException;
 import checker.Visitor;
 import util.AST.Terminal.Identifier;
 
@@ -34,7 +35,7 @@ public class IdentifierUnaryExpression extends UnaryExpression {
 	}
 
 	@Override
-	public Object visit(Visitor v, Object arg) {
+	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitIdentifierUnaryExpression(this, arg);
 	}
 	

@@ -24,5 +24,19 @@ public class Type extends Terminal {
 	public Object visit(Visitor v, Object arg) {
 		return v.visitType(this,arg);
 	}
+
+	@Override
+	public boolean equals(Object arg0) {
+		// TODO Auto-generated method stub
+		if (arg0 instanceof Type){
+			Type parametro = (Type)arg0;
+			return this.spelling.equals(parametro.getSpelling());
+			
+		}
+		
+		return false;
+	}
+	
+	
 	
 }

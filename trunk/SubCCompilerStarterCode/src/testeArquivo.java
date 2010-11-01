@@ -28,11 +28,12 @@ public class testeArquivo {
 		
 		try{
 			Parser parser = new Parser();
-			//Program prog = (Program) parser.parse();
-			//Checker checker = new Checker();
-			//checker.check(prog);
+			Program prog = (Program) parser.parse();
+			Checker checker = new Checker();
+			checker.check(prog);
 			
-			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
+//			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
+			
 			
 		}catch (Exception e) {
 			// TODO: handle exception

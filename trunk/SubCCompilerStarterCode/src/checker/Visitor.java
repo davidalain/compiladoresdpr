@@ -37,14 +37,14 @@ public interface Visitor {
 	public Object visitReturnStatement (ReturnStatement stat, Object arg) throws SemanticException;
 	public Object visitBreakStatement (BreakStatement stat, Object arg) throws SemanticException;
 	public Object visitContinueStatement (ContinueStatement stat, Object arg) throws SemanticException;
-	public Object visitPrintlnStatement (PrintlnStatement stat, Object arg);
-	public Object visitExpressionRHS (ExpressionRHS expRHS, Object arg);
+	public Object visitPrintlnStatement (PrintlnStatement stat, Object arg) throws SemanticException;
+	public Object visitExpressionRHS (ExpressionRHS expRHS, Object arg) throws SemanticException;
 	public Object visitCallStatementRHS (CallStatementRHS callRHS, Object arg) throws SemanticException;
 	public Object visitBinaryExpression (BinaryExpression byExp, Object arg) throws SemanticException;
-	public Object visitIdentifierUnaryExpression (IdentifierUnaryExpression idUnExp, Object arg);
+	public Object visitIdentifierUnaryExpression (IdentifierUnaryExpression idUnExp, Object arg) throws SemanticException;
 	public Object visitNumberUnaryExpression (NumberUnaryExpression numUnExp, Object arg);
 	public Object visitBooleanUnaryExpression (BooleanUnaryExpression booUnExp, Object arg);
-	public Object visitIdentifier (Identifier id, Object arg);
+	public Object visitIdentifier (Identifier id, Object arg) throws SemanticException;
 	public Object visitOperator (Operator op, Object arg) throws SemanticException;
 	public Object visitNumberValue (NumberValue number, Object arg);
 	public Object visitBooleanValue (BooleanValue boo, Object arg);
