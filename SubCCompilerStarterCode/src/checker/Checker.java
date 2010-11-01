@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import parser.Parser;
 
+import util.AST.AST;
 import util.AST.Program;
 import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
@@ -49,14 +50,18 @@ public final class Checker implements Visitor {
 		}
 	}
 
-
-
 	public Object visitAssignStatement(AssignStatement stat, Object arg) throws SemanticException {
-
+		
 		Type tipoVariavel = (Type) stat.getVariableName().visit(this, arg);
-		if (!idTable.containsKey(stat.getVariableName().getSpelling())){
-			throw new SemanticException("Variavel não foi declarada");
+		VariableDeclaration vd = (VariableDeclaration) idTable.retrieve(stat.getVariableName().getSpelling());
+		
+		if (vd == null){
+			throw new SemanticException("Variavel " + vd.getIdentifier().getSpelling()  + " não foi declarada");
 		}
+		if ( !(vd instanceof VariableDeclaration)){
+			throw new SemanticException("Só pode ser atribuido valor a variaveis");
+		}
+		
 		Type tipoAtribuicao = (Type) stat.getRightHandStatement().visit(this, arg);
 
 		if (!tipoVariavel.equals(tipoAtribuicao)){
@@ -130,7 +135,11 @@ public final class Checker implements Visitor {
 
 	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) throws SemanticException {
 
+		
+		
 		return callRHS.getFunctionCall().visit(this, arg);
+		
+		
 	}
 
 	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {
@@ -141,33 +150,36 @@ public final class Checker implements Visitor {
 		return null;
 	}
 
-	public Object visitExpressionRHS(ExpressionRHS expRHS, Object arg) {
-
-		Type tipo = expRHS.getExpression().getType();
-		if (tipo == null){
-			return null;
-		}
+	public Object visitExpressionRHS(ExpressionRHS expRHS, Object arg) throws SemanticException {
+		Type tipo = (Type) expRHS.getExpression().visit(this, arg);
 		return tipo;
 	}
 
 	public Object visitFunctionBody(FunctionBody fbody, Object arg) throws SemanticException {
-
+		
+		Type retorno ; 
+		boolean existeRetorno = false;
 		ArrayList<VariableDeclaration> variaveisFuncBody = fbody.getVariables();
 		for (VariableDeclaration vd : variaveisFuncBody){
+			vd.visit(this, arg);
 			String nomeVariavel = vd.getIdentifier().getSpelling();
-			this.idTable.enter(nomeVariavel, vd);
 		}
-
+		
 		ArrayList<Statement> statsFunBody = fbody.getStatements();
+		
 		//	int contadorRetornos = 0;
-		Statement ultimo = statsFunBody.get(statsFunBody.size()-1);
-		if (!(ultimo instanceof ReturnStatement)){
-			throw new SemanticException("");
-		}
 		for (Statement s : statsFunBody){
+			if (s instanceof ReturnStatement){
+				existeRetorno = true;
+			}
 			s.visit(this, arg);
+			
 		}
-
+		if ( (existeRetorno == true)){
+			
+		}
+		
+		
 		return null;
 	}
 
@@ -189,27 +201,34 @@ public final class Checker implements Visitor {
 				this.idTable.enter(nomeParametro, decl);
 			}
 		}
-
+		//problemas para retorno de função
+		
 		if (decl.getFunctionBody() != null){
 			decl.getFunctionBody().visit(this, decl);
 		}
-
+		else {
+			if (!decl.getReturnType().getSpelling().equals("void")){
+				throw new SemanticException("Funcao sem clausula return");
+			}
+		}
 		this.idTable.closeScope();
 
 		return null;
 	}
 
-	public Object visitIdentifier(Identifier id, Object arg) {
+	public Object visitIdentifier(Identifier id, Object arg) throws SemanticException {
 		VariableDeclaration retorno = (VariableDeclaration) idTable.retrieve(id.getSpelling());
 		if (retorno == null){
-			return null;
+			throw new SemanticException("Variavel " + id.getSpelling() + " nao declarada");
 		}
+		Command decoro = (Command) idTable.retrieve(id.getSpelling());
+		id.setNoDeclaracao(decoro);
 		return retorno.getType();
 
 	}
 
 	public Object visitIdentifierUnaryExpression(
-			IdentifierUnaryExpression idUnExp, Object arg) {
+			IdentifierUnaryExpression idUnExp, Object arg) throws SemanticException {
 		return idUnExp.getVariableName().visit(this, arg);
 	}
 
@@ -290,7 +309,7 @@ public final class Checker implements Visitor {
 
 	}
 
-	public Object visitPrintlnStatement(PrintlnStatement stat, Object arg) {
+	public Object visitPrintlnStatement(PrintlnStatement stat, Object arg) throws SemanticException {
 		return stat.getVariableName().visit(this, arg);
 	}
 
@@ -312,8 +331,7 @@ public final class Checker implements Visitor {
 		FunctionDeclaration funcao = (FunctionDeclaration)arg;
 		Type tipoRetornoFuncao = funcao.getReturnType();
 		Expression retorno = stat.getReturnExpression();
-
-		//se (return ;) e (tipo != void) exceção
+	
 		if (retorno == null){
 			if (!tipoRetornoFuncao.getSpelling().equals("void")){
 				throw new SemanticException("O tipo de retorno é incompatível");
@@ -332,22 +350,20 @@ public final class Checker implements Visitor {
 		}
 		else {
 			throw new SemanticException("O tipo de retorno é incompatível");
-			
+
 		}
-		
 
 		return tipoRetornoStatement;
 	}
 
 	public Object visitVariableDeclaration(VariableDeclaration decl, Object arg) throws SemanticException {
-
+		
 		String nomeVar = decl.getIdentifier().getSpelling();
 		idTable.enter(nomeVar ,decl);
 		Type tipoVariavel = decl.getType();
-		if (tipoVariavel.getSpelling().equals("void")){
+		if (tipoVariavel.equals(new Type("void"))){
 			throw new SemanticException("O tipo void só pode ser usado em declaração de função");
 		}
-
 		return null;
 	}
 

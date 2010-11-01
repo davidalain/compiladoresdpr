@@ -1,6 +1,7 @@
 package util.AST.RHS;
 
 import util.AST.AST;
+import util.AST.Terminal.Type;
 
 /**
  * AST class
@@ -9,4 +10,16 @@ import util.AST.AST;
  * @author Gustavo H P Carvalho
  * @email gustavohpcarvalho@ecomp.poli.br
  */
-public abstract class RHS extends AST {}
+public abstract class RHS extends AST {
+	private Type tipo ;
+
+	public Type getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(Type tipo) {
+		this.tipo = tipo;
+	}
+	
+	
+}
