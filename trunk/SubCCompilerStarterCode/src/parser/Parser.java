@@ -49,20 +49,24 @@ public class Parser {
 	// The scanner
 	private Scanner scanner = null;
 
+	public Parser(String path){
+		this.scanner = new Scanner(path);
+	}
+
 	/**
 	 * Parser constructor
 	 */
 	public Parser() {
 		// Initializes the scanner object
 		this.scanner = new Scanner();
-		
+
 		try{
 			this.currentToken = this.scanner.getNextToken();
 		}catch (LexicalException e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -98,7 +102,7 @@ public class Parser {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+
 		return spelling;
 	}
 
@@ -110,48 +114,48 @@ public class Parser {
 	 */
 	private Program parseProgram() throws SyntacticException{
 		ArrayList<Command> commands = new ArrayList<Command>();
-		
+
 		//Enquanto ainda não chegou no fim do código fonte
 		while(this.currentToken.getKind() != GrammarSymbols.EOT){
-			
+
 			Type type = this.parseType();
 			Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
-			
+
 			Command atualCommand = null;
-			
+
 			//declaração de variável
 			//Type identifier ;
 			if(this.currentToken.getKind() == GrammarSymbols.SEMICOLON){
 				this.acceptIt();
-				
+
 				//comando lido a ser adicionado na lista
 				atualCommand = new VariableDeclaration(type,identifier); 
-	
-			//declaração de função
-			//Type identifier ( (Parameters | empty) ) { FunctionBody }
+
+				//declaração de função
+				//Type identifier ( (Parameters | empty) ) { FunctionBody }
 			}else {
-				
+
 				ArrayList<VariableDeclaration> parameters = null;
 				FunctionBody functionBody = null;
-				
+
 				//( (Parameters | empty) )
 				this.accept(GrammarSymbols.LPAR);
 				if(this.currentToken.getKind() != GrammarSymbols.RPAR){
 					parameters = this.parseParameters(); // david
 				}
 				this.accept(GrammarSymbols.RPAR);
-				
+
 				// { functionBody }
 				this.accept(GrammarSymbols.LBRACKET);
 				if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
 					functionBody = this.parseFunctionBody();
 				}
 				this.accept(GrammarSymbols.RBRACKET);
-				
+
 				//comando lido a ser adicionado na lista	
 				atualCommand = new FunctionDeclaration(type,identifier,parameters,functionBody); 
 			}
-			
+
 			//Adiciona na lista de comandos o último comando lido
 			commands.add(atualCommand);
 		}
@@ -165,27 +169,27 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private FunctionBody parseFunctionBody() throws SyntacticException {
-		
+
 		ArrayList<VariableDeclaration> variables = new ArrayList<VariableDeclaration>();
 		ArrayList<Statement> statements = new ArrayList<Statement>();
-		
+
 		//declaração de variáveis no inicio do corpo da função
 		//(Type identifier ;)*
 		while( this.currentToken.getKind() == GrammarSymbols.BOOLEAN || 
-			this.currentToken.getKind() == GrammarSymbols.INT ||
-			this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
-			this.currentToken.getKind() == GrammarSymbols.VOID)
+				this.currentToken.getKind() == GrammarSymbols.INT ||
+				this.currentToken.getKind() == GrammarSymbols.DOUBLE ||
+				this.currentToken.getKind() == GrammarSymbols.VOID)
 		{
 			Type type = this.parseType();
 			Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 			this.accept(GrammarSymbols.SEMICOLON);
-			
+
 			variables.add(new VariableDeclaration(type, identifier));
 		}
-		
+
 		//Statements
 		statements = this.parseStatements();
-		
+
 		return new FunctionBody(variables, statements);
 	}
 
@@ -203,11 +207,11 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private ArrayList<Statement> parseStatements() throws SyntacticException {
-		
+
 		ArrayList<Statement> statementsReturn = new ArrayList<Statement>();
-		
+
 		while(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
-			
+
 			//chamada de função ou atribuição de variável
 			//identifier (( (Arguments | empty) ) | = RHS) ;
 			if(this.currentToken.getKind() == GrammarSymbols.ID) {
@@ -217,9 +221,9 @@ public class Parser {
 				// chamada de função
 				//identifier ( ( Arguments | empty) ) ;
 				if(this.currentToken.getKind() == GrammarSymbols.LPAR){
-					
+
 					ArrayList<Identifier> arguments = null;
-					
+
 					// ( ( Arguments | empty) ) ;
 					this.acceptIt();
 					if(this.currentToken.getKind() != GrammarSymbols.RPAR){
@@ -227,46 +231,46 @@ public class Parser {
 					}
 					this.accept(GrammarSymbols.RPAR);
 					this.accept(GrammarSymbols.SEMICOLON);
-					
+
 					statementsReturn.add(new CallStatement(identifier,arguments));
-					
-				// atribuição
-				// identifier = RHS ;
+
+					// atribuição
+					// identifier = RHS ;
 				}else{
 					this.accept(GrammarSymbols.ASSIGN);
 					RHS rhs = this.parseRHS();
 					this.accept(GrammarSymbols.SEMICOLON);
-					
+
 					statementsReturn.add(new AssignStatement(identifier,rhs));
-					
+
 				}
-				
-			//Padrão if
-			//if ( Expression ) { Statements } (empty | else { Statements }) |
+
+				//Padrão if
+				//if ( Expression ) { Statements } (empty | else { Statements }) |
 			}else if(this.currentToken.getKind() == GrammarSymbols.IF){
 				this.acceptIt();
-				
+
 				Expression condition;
 				ArrayList<Statement> ifStatements = null;
 				ArrayList<Statement> elseStatements = null;
-				
+
 				//( Expression )
 				this.accept(GrammarSymbols.LPAR);
 				condition = this.parseExpression();
 				this.accept(GrammarSymbols.RPAR);
-				
+
 				// { Statements }
 				this.accept(GrammarSymbols.LBRACKET);
 				if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
 					ifStatements = this.parseStatements();
 				}
 				this.accept(GrammarSymbols.RBRACKET);
-				
+
 				//verificar else
 				//(empty | else { Statements })
 				if(this.currentToken.getKind() == GrammarSymbols.ELSE){
 					this.acceptIt();
-					
+
 					// { Statements }
 					this.accept(GrammarSymbols.LBRACKET);
 					if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
@@ -274,77 +278,77 @@ public class Parser {
 					}
 					this.accept(GrammarSymbols.RBRACKET);
 				}
-				
+
 				statementsReturn.add(new IfElseStatement(condition, ifStatements, elseStatements));
-				
-			//Padrão while
-			//while ( Expression ) { Statements } |
+
+				//Padrão while
+				//while ( Expression ) { Statements } |
 			}else if(this.currentToken.getKind() == GrammarSymbols.WHILE){
-				
+
 				Expression conditionWhile;
 				ArrayList<Statement> statementsWhile = new ArrayList<Statement>();
-				
+
 				// while ( Expression )			
 				this.acceptIt();
 				this.accept(GrammarSymbols.LPAR);
 				conditionWhile = this.parseExpression();
 				this.accept(GrammarSymbols.RPAR);
-				
+
 				// { Statements }
 				this.accept(GrammarSymbols.LBRACKET);
 				if(this.currentToken.getKind() != GrammarSymbols.RBRACKET){
 					statementsWhile = this.parseStatements();	
 				}
 				this.accept(GrammarSymbols.RBRACKET);
-			
+
 				statementsReturn.add(new WhileStatement(conditionWhile, statementsWhile));
-				
-			// Padrão return
-			// return Expression ; | return ; |
+
+				// Padrão return
+				// return Expression ; | return ; |
 			}else if(this.currentToken.getKind() == GrammarSymbols.RETURN){
 				this.acceptIt();
-				
+
 				Expression retExpression = null;
-				
+
 				if(this.currentToken.getKind() != GrammarSymbols.SEMICOLON){
 					retExpression = this.parseExpression();
 				}
 				this.accept(GrammarSymbols.SEMICOLON);
-			
+
 				statementsReturn.add(new ReturnStatement(retExpression));
-				
-			//break
+
+				//break
 			}else if(this.currentToken.getKind() == GrammarSymbols.BREAK){
 				this.acceptIt();
 				this.accept(GrammarSymbols.SEMICOLON);
-				
+
 				statementsReturn.add(new BreakStatement());
-				
-			//continue
+
+				//continue
 			}else if(this.currentToken.getKind() == GrammarSymbols.CONTINUE){
 				this.acceptIt();
 				this.accept(GrammarSymbols.SEMICOLON);
-			
+
 				statementsReturn.add(new ContinueStatement());
-				
-			//println ( identifier )
+
+				//println ( identifier )
 			}else if(this.currentToken.getKind() == GrammarSymbols.PRINTLN){
 				this.acceptIt();
-				
+
 				// ( identifier )
 				this.accept(GrammarSymbols.LPAR);
 				Identifier identifierPrintln = new Identifier(this.accept(GrammarSymbols.ID));
 				this.accept(GrammarSymbols.RPAR);
-				
+
 				statementsReturn.add(new PrintlnStatement(identifierPrintln));
-				
-			//Erro, fora do padrão
+
+				//Erro, fora do padrão
 			}else{
 				throw new SyntacticException("[parseStatements Erro] fora do padrão", this.currentToken);
 			}
-			
+
 		}//fim do while
-		
+
 		return statementsReturn;
 	}
 
@@ -354,27 +358,27 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private Expression parseExpression() throws SyntacticException {
-		
+
 		// ( Expression ( + | - | * | / | == | != | > | >= | < | <= ) Expression )
 		if(this.currentToken.getKind() == GrammarSymbols.LPAR){
 			this.acceptIt();
-			
+
 			Expression leftExpression = this.parseExpression();
 			Operator operator = this.parseOperation();	
 			Expression rightExpression = this.parseExpression();
-			
+
 			this.accept(GrammarSymbols.RPAR);
-			
+
 			return new BinaryExpression(leftExpression, operator, rightExpression);
-			
-		// Value
+
+			// Value
 		}else{
 			UnaryExpression unaryExpression = this.parseValue();
 			return unaryExpression;
-			
+
 		}
 	}
-	
+
 	/**
 	 * Parse de uma operação
 	 * @throws SyntacticException
@@ -382,21 +386,21 @@ public class Parser {
 	private Operator parseOperation() throws SyntacticException {
 		Operator operator;
 		if(	this.currentToken.getKind() == GrammarSymbols.PLUS ||
-			this.currentToken.getKind() == GrammarSymbols.MINUS ||
-			this.currentToken.getKind() == GrammarSymbols.MULT ||
-			this.currentToken.getKind() == GrammarSymbols.DIV ||
-			this.currentToken.getKind() == GrammarSymbols.EQUAL ||
-			this.currentToken.getKind() == GrammarSymbols.NOTEQUAL ||
-			this.currentToken.getKind() == GrammarSymbols.GREATERTHAN ||
-			this.currentToken.getKind() == GrammarSymbols.GREATEREQUALTHAN ||
-			this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
-			this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN )
+				this.currentToken.getKind() == GrammarSymbols.MINUS ||
+				this.currentToken.getKind() == GrammarSymbols.MULT ||
+				this.currentToken.getKind() == GrammarSymbols.DIV ||
+				this.currentToken.getKind() == GrammarSymbols.EQUAL ||
+				this.currentToken.getKind() == GrammarSymbols.NOTEQUAL ||
+				this.currentToken.getKind() == GrammarSymbols.GREATERTHAN ||
+				this.currentToken.getKind() == GrammarSymbols.GREATEREQUALTHAN ||
+				this.currentToken.getKind() == GrammarSymbols.LESSERTHAN ||
+				this.currentToken.getKind() == GrammarSymbols.LESSEREQUALTHAN )
 		{
 			operator = new Operator(this.acceptIt());// aceita e retorna o spelling
 		}else{
 			throw new SyntacticException("[parseOperation erro] Esperada uma operação", this.currentToken);
 		}
-		
+
 		return operator;
 	}
 
@@ -406,29 +410,29 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private UnaryExpression parseValue() throws SyntacticException {
-		
+
 		if(	this.currentToken.getKind() == GrammarSymbols.ID){
 			return new IdentifierUnaryExpression(new Identifier(this.acceptIt()));
-			
+
 		}else if(this.currentToken.getKind() == GrammarSymbols.NUMBER ||
 				this.currentToken.getKind() == GrammarSymbols.INT ||
 				this.currentToken.getKind() == GrammarSymbols.DOUBLE)
 		{
 			return new NumberUnaryExpression(new NumberValue(this.acceptIt()));
-			
+
 		}else if(this.currentToken.getKind() == GrammarSymbols.FALSE ||
 				this.currentToken.getKind() == GrammarSymbols.TRUE )
 		{
 			return new BooleanUnaryExpression(new BooleanValue(this.acceptIt()));
-			
+
 		}else{
 			throw new SyntacticException("[parseValue Erro] Era esperado um valor",this.currentToken);
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Parse do padrão [RHS]
 	 * RHS -> ( Expression ) | identifier ( (Arguments | empty) )
@@ -441,10 +445,10 @@ public class Parser {
 			ExpressionRHS expRHS = new ExpressionRHS(this.parseExpression());
 			this.accept(GrammarSymbols.RPAR);
 			return expRHS;
-			
-		// identifier ( (Arguments | empty) )
+
+			// identifier ( (Arguments | empty) )
 		}else{
-			
+
 			Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 			this.accept(GrammarSymbols.LPAR);
 			ArrayList<Identifier> arguments = this.parseArguments();
@@ -459,23 +463,23 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private ArrayList<Identifier> parseArguments() throws SyntacticException {
-		
+
 		ArrayList<Identifier> arguments = new ArrayList<Identifier>();
-		
+
 		//se a função tem argumentos
 		if(this.currentToken.getKind() != GrammarSymbols.RPAR){
-			
+
 			Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 			arguments.add(identifier);
-			
+
 			while(this.currentToken.getKind() == GrammarSymbols.COMMA){
 				this.acceptIt();
-				
+
 				identifier = new Identifier(this.accept(GrammarSymbols.ID));
 				arguments.add(identifier);
 			}
 		}
-		
+
 		return arguments;
 	}
 
@@ -485,21 +489,21 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private ArrayList<VariableDeclaration> parseParameters() throws SyntacticException {
-		
+
 		ArrayList<VariableDeclaration> parameters = new ArrayList<VariableDeclaration>();
-		
+
 		Type type = this.parseType();
 		Identifier identifier = new Identifier(this.accept(GrammarSymbols.ID));
 		parameters.add(new VariableDeclaration(type, identifier));
-		
+
 		while(this.currentToken.getKind() == GrammarSymbols.COMMA){
 			this.acceptIt();
-			
+
 			type = this.parseType();
 			identifier = new Identifier(this.accept(GrammarSymbols.ID));
 			parameters.add(new VariableDeclaration(type, identifier));
 		}
-		
+
 		return parameters;
 	}
 
@@ -509,7 +513,7 @@ public class Parser {
 	 * @throws SyntacticException 
 	 */
 	private Type parseType() throws SyntacticException{
-		
+
 		switch (this.currentToken.getKind()) {
 		case GrammarSymbols.VOID:
 		case GrammarSymbols.INT:
@@ -520,7 +524,7 @@ public class Parser {
 		default:
 			throw new SyntacticException("Erro de sintaxe em [parseType]",this.currentToken);
 		}
-		
+
 
 	}
 
@@ -529,9 +533,9 @@ public class Parser {
 	 * @throws SyntacticException
 	 */
 	public AST parse() throws SyntacticException {
-		
+
 		return this.parseProgram();
-		
+
 	}
 
 }

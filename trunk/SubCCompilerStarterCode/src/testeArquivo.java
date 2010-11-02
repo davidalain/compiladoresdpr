@@ -1,11 +1,7 @@
-import checker.Checker;
-import parser.GrammarSymbols;
 import parser.Parser;
 import parser.SyntacticException;
-import scanner.Scanner;
-import scanner.Token;
-import util.Arquivo;
 import util.AST.Program;
+import checker.Checker;
 
 
 public class testeArquivo {

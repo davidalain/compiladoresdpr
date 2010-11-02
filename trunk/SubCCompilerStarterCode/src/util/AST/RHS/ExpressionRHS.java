@@ -1,8 +1,8 @@
 package util.AST.RHS;
 
+import util.AST.Expression.Expression;
 import checker.SemanticException;
 import checker.Visitor;
-import util.AST.Expression.Expression;
 
 /**
  * AST class

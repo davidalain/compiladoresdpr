@@ -1,8 +1,8 @@
 package util.AST.Expression;
 
+import util.AST.Terminal.Operator;
 import checker.SemanticException;
 import checker.Visitor;
-import util.AST.Terminal.Operator;
 
 /**
  * AST class

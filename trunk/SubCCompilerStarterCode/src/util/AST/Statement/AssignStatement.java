@@ -1,9 +1,9 @@
 package util.AST.Statement;
 
-import checker.SemanticException;
-import checker.Visitor;
 import util.AST.RHS.RHS;
 import util.AST.Terminal.Identifier;
+import checker.SemanticException;
+import checker.Visitor;
 
 /**
  * AST class

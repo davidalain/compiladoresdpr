@@ -1,6 +1,5 @@
 package util.AST.Terminal;
 
-import util.AST.AST;
 import util.AST.Command.Command;
 import checker.SemanticException;
 import checker.Visitor;
