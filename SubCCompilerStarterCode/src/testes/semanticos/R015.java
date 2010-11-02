@@ -3,7 +3,6 @@ package testes.semanticos;
 import junit.framework.TestCase;
 import parser.Parser;
 import parser.SyntacticException;
-import scanner.LexicalException;
 import util.Mensagens;
 import util.AST.Program;
 import checker.Checker;
@@ -39,8 +38,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
@@ -70,8 +67,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
@@ -98,8 +93,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
@@ -126,8 +119,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
@@ -154,8 +145,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
@@ -182,8 +171,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
@@ -210,8 +197,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.IDENTIFICADOR_JA_DECLARADO, e.getMessage());
@@ -238,8 +223,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
@@ -249,8 +232,9 @@ public class R015 extends TestCase {
 	
 	/**
 	 * main com um argumento int e um argumento boolean
+	 * @throws SemanticException 
 	 */
-	public void testC009()
+	public void testC009() throws SemanticException
 	{
 		Parser p;
 		Program ast;
@@ -267,11 +251,6 @@ public class R015 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
-		} catch (SemanticException e) {
-			// TODO Auto-generated catch block
-			assertEquals(Mensagens.FUNCAO_MAIN, e.getMessage());
 		}
 	}
 	

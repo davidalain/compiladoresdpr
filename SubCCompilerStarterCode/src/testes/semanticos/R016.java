@@ -39,8 +39,6 @@ public class R016 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
@@ -67,8 +65,6 @@ public class R016 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.IDENTIFICADOR_JA_DECLARADO, e.getMessage());
@@ -95,8 +91,6 @@ public class R016 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
@@ -124,8 +118,6 @@ public class R016 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.IDENTIFICADOR_JA_DECLARADO, e.getMessage());
@@ -153,8 +145,6 @@ public class R016 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");

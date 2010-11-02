@@ -1,11 +1,13 @@
-void f(int a){
+
+int f(){
+	return 1;
+	}	
+void main(){
+	int a;
+	
+	a = (1);
+	
+	f = (a);
 	
 }
-
-void main()
-{
-	f();
-}
-
-
 

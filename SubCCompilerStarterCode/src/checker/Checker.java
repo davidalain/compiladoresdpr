@@ -2,6 +2,7 @@ package checker;
 
 import java.util.ArrayList;
 
+import util.AST.AST;
 import util.AST.Program;
 import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
@@ -47,10 +48,11 @@ public final class Checker implements Visitor {
 	public Object visitAssignStatement(AssignStatement stat, Object arg) throws SemanticException {
 
 		Type tipoVariavel = (Type) stat.getVariableName().visit(this, arg);
-		VariableDeclaration vd = (VariableDeclaration) idTable.retrieve(stat.getVariableName().getSpelling());
-
+		Command vd = (Command) idTable.retrieve(stat.getVariableName().getSpelling());
+		
+		
 		if (vd == null){
-			throw new SemanticException("Variavel " + vd.getIdentifier().getSpelling()  + " não foi declarada");
+			throw new SemanticException("Variavel não foi declarada");
 		}
 		if ( !(vd instanceof VariableDeclaration)){
 			throw new SemanticException("Só pode ser atribuido valor a variaveis");
@@ -91,9 +93,10 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitBreakStatement(BreakStatement stat, Object arg) throws SemanticException {
-		Statement whileStatementPai = (Statement) arg;
-		if (!(whileStatementPai instanceof WhileStatement)){
+		ArrayList<AST> argumentos = (ArrayList<AST>) arg;
+		if (argumentos.size() == 1){
 			throw new SemanticException("O break só pode ser usado dentro de escopo de um while");
+			
 		}
 		return null;
 	}
@@ -147,9 +150,10 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {
-		Statement whileStatementPai = (Statement) arg;
-		if (!(whileStatementPai instanceof WhileStatement)){
+		ArrayList<AST> argumentos = (ArrayList<AST>) arg;
+		if (argumentos.size() == 1){
 			throw new SemanticException("O continue só pode ser usado dentro de escopo de um while");
+			
 		}
 		return null;
 	}
@@ -161,22 +165,25 @@ public final class Checker implements Visitor {
 
 	public Object visitFunctionBody(FunctionBody fbody, Object arg) throws SemanticException {
 
-		Type retorno ; 
+		//arg0 pode ser a declaração da função
 		boolean existeRetorno = false;
+		
+		//pega as declarações da função
 		ArrayList<VariableDeclaration> variaveisFuncBody = fbody.getVariables();
 		for (VariableDeclaration vd : variaveisFuncBody){
 			vd.visit(this, arg);
-			String nomeVariavel = vd.getIdentifier().getSpelling();
 		}
 
 		ArrayList<Statement> statsFunBody = fbody.getStatements();
-
+		ArrayList<Object> arg1 = new ArrayList<Object>();
+		arg1.add(arg);
+		
 		//	int contadorRetornos = 0;
 		for (Statement s : statsFunBody){
 			if (s instanceof ReturnStatement){
 				existeRetorno = true;
 			}
-			s.visit(this, arg);
+			s.visit(this, arg1);
 
 		}
 		if ( (existeRetorno == true)){
@@ -196,12 +203,7 @@ public final class Checker implements Visitor {
 		ArrayList<VariableDeclaration> parametros = decl.getParameters();
 		if (parametros != null){
 			for (VariableDeclaration vd : parametros){
-
 				String nomeParametro = vd.getIdentifier().getSpelling();
-				if(this.idTable.containsKey(nomeParametro)){
-					throw new SemanticException("Identificador "+nomeParametro+" já foi declarado");
-				}
-
 				this.idTable.enter(nomeParametro, decl);
 			}
 		}
@@ -211,7 +213,7 @@ public final class Checker implements Visitor {
 			decl.getFunctionBody().visit(this, decl);
 		}
 		else {
-			if (!decl.getReturnType().getSpelling().equals("void")){
+			if (!decl.getReturnType().equals(new Type("void"))){
 				throw new SemanticException("Funcao sem clausula return");
 			}
 		}
@@ -342,12 +344,19 @@ public final class Checker implements Visitor {
 
 	public Object visitReturnStatement(ReturnStatement stat, Object arg) throws SemanticException {
 
-		FunctionDeclaration funcao = (FunctionDeclaration)arg;
+		ArrayList<Object> parametros = (ArrayList<Object>) arg;
+		WhileStatement whileStat = null;
+		FunctionDeclaration funcao = (FunctionDeclaration) parametros.get(0);
+		
+		if (parametros.size() == 2){
+			whileStat = (WhileStatement) parametros.get(1);
+		}
+		
 		Type tipoRetornoFuncao = funcao.getReturnType();
 		Expression retorno = stat.getReturnExpression();
 
 		if (retorno == null){
-			if (!tipoRetornoFuncao.getSpelling().equals("void")){
+			if (!tipoRetornoFuncao.equals (new Type("void"))){
 				throw new SemanticException("O tipo de retorno é incompatível");
 			}
 			else {
@@ -357,14 +366,13 @@ public final class Checker implements Visitor {
 
 		Type tipoRetornoStatement = (Type) retorno.visit(this, arg);
 
-		if (!tipoRetornoFuncao.getSpelling().equals("void")){
-			if (!tipoRetornoFuncao.getSpelling().equals(tipoRetornoStatement.getSpelling())){
+		if (!tipoRetornoFuncao.equals(new Type("void"))){
+			if (!tipoRetornoFuncao.equals(tipoRetornoStatement)){
 				throw new SemanticException("O tipo de retorno é incompatível");
 			}	
 		}
 		else {
 			throw new SemanticException("O tipo de retorno é incompatível");
-
 		}
 
 		return tipoRetornoStatement;
@@ -388,7 +396,10 @@ public final class Checker implements Visitor {
 		}
 		ArrayList<Statement> statWhile = stat.getStatements();
 		for (Statement s : statWhile){
-			s.visit(this, stat);
+			
+			ArrayList<Object> whileAndFunction = (ArrayList<Object>) arg;
+			whileAndFunction.add(stat);
+			s.visit(this, whileAndFunction);
 
 		}
 		return null;

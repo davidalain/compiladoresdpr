@@ -38,8 +38,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.LADOS_DIFERENTES, e.getMessage());
@@ -66,8 +64,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.LADOS_DIFERENTES, e.getMessage());
@@ -94,8 +90,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
@@ -122,8 +116,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
@@ -151,8 +143,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
@@ -179,8 +169,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
@@ -207,8 +195,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("C�digo correto");
@@ -235,8 +221,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("C�digo correto");
@@ -263,8 +247,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("C�digo correto");
@@ -292,8 +274,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
@@ -321,8 +301,6 @@ public class R005 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.RETORNO_INVALIDO, e.getMessage());
