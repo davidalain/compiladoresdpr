@@ -1,0 +1,17 @@
+void f(int a, double b){
+	
+}
+
+void main()
+{
+	double a;
+
+	
+	a = (1.0);
+
+	
+	f(a);
+}
+
+
+

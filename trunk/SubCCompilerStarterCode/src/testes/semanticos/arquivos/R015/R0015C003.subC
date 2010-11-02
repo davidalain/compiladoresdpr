@@ -1,0 +1,16 @@
+double f(){
+		double b;
+		b = (1.0);
+		return b;
+	}	
+
+double g(){
+	double a;
+	double b;
+	
+	a = (1.0);
+	b = (2.0);
+	
+	return (((a)));
+}	
+

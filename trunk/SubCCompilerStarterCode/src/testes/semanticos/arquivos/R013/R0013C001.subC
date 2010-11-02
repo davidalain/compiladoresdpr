@@ -1,0 +1,15 @@
+
+double f(){
+		double b;
+		b = (1.0);
+		
+		return b;
+	}	
+void main(){
+	int a;
+	
+	
+	a = f();
+	
+}
+

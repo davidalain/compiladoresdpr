@@ -1,0 +1,13 @@
+
+boolean f(){
+		boolean b;
+		b = (false);
+		return (b);
+	}	
+void main(){
+	double a;
+	
+	a = f();
+	
+}
+

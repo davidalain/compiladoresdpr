@@ -1,0 +1,12 @@
+void main(){
+}
+
+void f()
+{
+	while(true){
+		if(true){
+			return 1;
+		}
+	}
+}
+

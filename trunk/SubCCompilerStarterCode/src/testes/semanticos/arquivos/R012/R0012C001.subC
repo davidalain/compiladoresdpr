@@ -1,0 +1,26 @@
+void main(){}
+
+void f()
+{
+	boolean a;
+	a = ((1 == 2));
+	if(a)
+	{
+		return ;
+	}
+	
+	a = ((1.0 != 2.0));
+	if(a){}
+	
+	a = ((false == true));
+	if(a){}
+	
+	a = ((1 > 2));
+	if(a){}
+	
+	a = ((1 < 2));
+	if(a){}
+	
+	a = ((1.0 <= 2.0));
+	if(a){}
+}

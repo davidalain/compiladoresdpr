@@ -1,0 +1,14 @@
+
+
+void main()
+{
+	boolean a;
+	a = (false);
+	
+	while(a){
+	}
+	
+}
+
+
+
