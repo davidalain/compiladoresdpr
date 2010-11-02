@@ -34,6 +34,13 @@ public class Scanner {
 		this.column = 0;
 		this.currentChar = this.file.readChar();
 	}
+	public Scanner(String path){
+		this.file = new Arquivo(path);		
+		this.line = 0;
+		this.column = 0;
+		this.currentChar = this.file.readChar();
+	
+	}
 
 	/**
 	 * Returns the next token
@@ -291,6 +298,9 @@ public class Scanner {
 		}
 		if(this.currentSpelling.toString().equals("return")){
 			return GrammarSymbols.RETURN;
+		}
+		if(this.currentSpelling.toString().equals("false")){
+			return GrammarSymbols.FALSE;
 		}
 		if(this.currentSpelling.toString().equals("true")){
 			return GrammarSymbols.TRUE;

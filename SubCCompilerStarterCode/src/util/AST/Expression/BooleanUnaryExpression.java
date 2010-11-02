@@ -1,7 +1,7 @@
 package util.AST.Expression;
 
-import checker.Visitor;
 import util.AST.Terminal.BooleanValue;
+import checker.Visitor;
 
 /**
  * AST class

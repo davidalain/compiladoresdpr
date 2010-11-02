@@ -2,10 +2,9 @@ package util.AST.Statement;
 
 import java.util.ArrayList;
 
+import util.AST.Expression.Expression;
 import checker.SemanticException;
 import checker.Visitor;
-
-import util.AST.Expression.Expression;
 
 /**
  * AST class

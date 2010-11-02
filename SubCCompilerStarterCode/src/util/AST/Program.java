@@ -2,10 +2,9 @@ package util.AST;
 
 import java.util.ArrayList;
 
+import util.AST.Command.Command;
 import checker.SemanticException;
 import checker.Visitor;
-
-import util.AST.Command.Command;
 
 /**
  * AST class

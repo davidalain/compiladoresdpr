@@ -2,9 +2,6 @@ package checker;
 
 import java.util.ArrayList;
 
-import parser.Parser;
-
-import util.AST.AST;
 import util.AST.Program;
 import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
@@ -41,27 +38,24 @@ public final class Checker implements Visitor {
 		idTable = new IdentificationTable();
 
 	}
-	public void check(Program prog){
-		try {
-			prog.visit(this, null);
-		} catch (SemanticException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void check(Program prog) throws SemanticException{
+
+		prog.visit(this, null);
+
 	}
 
 	public Object visitAssignStatement(AssignStatement stat, Object arg) throws SemanticException {
-		
+
 		Type tipoVariavel = (Type) stat.getVariableName().visit(this, arg);
 		VariableDeclaration vd = (VariableDeclaration) idTable.retrieve(stat.getVariableName().getSpelling());
-		
+
 		if (vd == null){
 			throw new SemanticException("Variavel " + vd.getIdentifier().getSpelling()  + " não foi declarada");
 		}
 		if ( !(vd instanceof VariableDeclaration)){
 			throw new SemanticException("Só pode ser atribuido valor a variaveis");
 		}
-		
+
 		Type tipoAtribuicao = (Type) stat.getRightHandStatement().visit(this, arg);
 
 		if (!tipoVariavel.equals(tipoAtribuicao)){
@@ -76,7 +70,7 @@ public final class Checker implements Visitor {
 
 		Type expEsq = (Type)byExp.getLeftExpression().visit(this, arg);
 		Type expDir = (Type)byExp.getRightExpression().visit(this, arg);
-		if (!expDir.getSpelling().equals(expEsq.getSpelling())){
+		if (!expDir.equals(expEsq)){
 			throw new SemanticException("Operandos com tipos diferentes");
 		}
 
@@ -87,7 +81,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitBooleanValue(BooleanValue boo, Object arg) {
-		return new Type(boo.getSpelling());
+		return new Type("boolean");
 	}
 
 	public Object visitBooleanUnaryExpression(BooleanUnaryExpression booUnExp,
@@ -111,35 +105,41 @@ public final class Checker implements Visitor {
 		if(funcao == null){
 			throw new SemanticException("Funcão "+nomeFuncao+" não foi declarada");
 		}
-
-		if(stat.getArguments().size() != funcao.getParameters().size()){
-			throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
-		}
-
-		int tamanho = stat.getArguments().size();
-		ArrayList<Identifier> argumentos = stat.getArguments();
-		ArrayList<VariableDeclaration> parametros = funcao.getParameters();
-
-		for(int i = 0 ; i < tamanho ; i++){
-			Type argumentoChamada = (Type) argumentos.get(i).visit(this, arg);
-			Type parametroFuncao = (Type) parametros.get(i).visit(this, arg);
-
-			if(!argumentoChamada.equals(parametroFuncao)){
-				throw new SemanticException("Tipo do argumento "+argumentoChamada.getSpelling()+" incompatível");
+		if (stat.getArguments() == null){
+			if (funcao.getParameters().size() != 0 ){
+				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
 			}
-
 		}
+		else{
+			if(stat.getArguments().size() != funcao.getParameters().size()){
+				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
+			}
+			int tamanho = stat.getArguments().size();
+			ArrayList<Identifier> argumentos = stat.getArguments();
+			ArrayList<VariableDeclaration> parametros = funcao.getParameters();
+			for(int i = 0 ; i < tamanho ; i++){
+				Type argumentoChamada = (Type) argumentos.get(i).visit(this, arg);
+				Type parametroFuncao = parametros.get(i).getType();
+
+				if(!argumentoChamada.equals(parametroFuncao)){
+					throw new SemanticException("Tipo do argumento "+argumentoChamada.getSpelling()+" incompatível");
+				}
+
+			}
+		}
+
+
 
 		return funcao.getReturnType();
 	}
 
 	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) throws SemanticException {
 
-		
-		
+
+
 		return callRHS.getFunctionCall().visit(this, arg);
-		
-		
+
+
 	}
 
 	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {
@@ -156,7 +156,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitFunctionBody(FunctionBody fbody, Object arg) throws SemanticException {
-		
+
 		Type retorno ; 
 		boolean existeRetorno = false;
 		ArrayList<VariableDeclaration> variaveisFuncBody = fbody.getVariables();
@@ -164,22 +164,22 @@ public final class Checker implements Visitor {
 			vd.visit(this, arg);
 			String nomeVariavel = vd.getIdentifier().getSpelling();
 		}
-		
+
 		ArrayList<Statement> statsFunBody = fbody.getStatements();
-		
+
 		//	int contadorRetornos = 0;
 		for (Statement s : statsFunBody){
 			if (s instanceof ReturnStatement){
 				existeRetorno = true;
 			}
 			s.visit(this, arg);
-			
+
 		}
 		if ( (existeRetorno == true)){
-			
+
 		}
-		
-		
+
+
 		return null;
 	}
 
@@ -202,7 +202,7 @@ public final class Checker implements Visitor {
 			}
 		}
 		//problemas para retorno de função
-		
+
 		if (decl.getFunctionBody() != null){
 			decl.getFunctionBody().visit(this, decl);
 		}
@@ -217,13 +217,18 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitIdentifier(Identifier id, Object arg) throws SemanticException {
-		VariableDeclaration retorno = (VariableDeclaration) idTable.retrieve(id.getSpelling());
+
+		Command retorno =  (Command) idTable.retrieve(id.getSpelling());
 		if (retorno == null){
 			throw new SemanticException("Variavel " + id.getSpelling() + " nao declarada");
 		}
-		Command decoro = (Command) idTable.retrieve(id.getSpelling());
-		id.setNoDeclaracao(decoro);
-		return retorno.getType();
+		id.setNoDeclaracao(retorno);
+		if (retorno instanceof VariableDeclaration){
+			return ((VariableDeclaration) retorno).getType();
+		}
+		else {
+			return ((FunctionDeclaration)retorno).getReturnType();
+		}
 
 	}
 
@@ -234,21 +239,26 @@ public final class Checker implements Visitor {
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg) throws SemanticException {
 		Type condicao = (Type) stat.getCondition().visit(this, arg);
-		if (!condicao.getSpelling().equals("boolean")){
+		if (!condicao.equals(new Type("boolean"))){
 			throw new SemanticException("Condicao do if deve ser boolean");
 		}
 		ArrayList<Statement> ifStats = stat.getIfStatements();
 		ArrayList<Statement> elseStats = stat.getElseStatements();
 		this.idTable.openScope();
-		for (Statement s: ifStats){
-			s.visit(this, arg);
+		if (ifStats != null){
+			for (Statement s: ifStats){
+				s.visit(this, arg);
+			}
 		}
 		this.idTable.closeScope();
 
 		this.idTable.openScope();
-		for (Statement s: elseStats){
-			s.visit(this, arg);
+		if (elseStats != null){
+			for (Statement s: elseStats){
+				s.visit(this, arg);
+			}
 		}
+
 		this.idTable.closeScope();
 
 		return null;
@@ -331,7 +341,7 @@ public final class Checker implements Visitor {
 		FunctionDeclaration funcao = (FunctionDeclaration)arg;
 		Type tipoRetornoFuncao = funcao.getReturnType();
 		Expression retorno = stat.getReturnExpression();
-	
+
 		if (retorno == null){
 			if (!tipoRetornoFuncao.getSpelling().equals("void")){
 				throw new SemanticException("O tipo de retorno é incompatível");
@@ -357,7 +367,7 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitVariableDeclaration(VariableDeclaration decl, Object arg) throws SemanticException {
-		
+
 		String nomeVar = decl.getIdentifier().getSpelling();
 		idTable.enter(nomeVar ,decl);
 		Type tipoVariavel = decl.getType();
