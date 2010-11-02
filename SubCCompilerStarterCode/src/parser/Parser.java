@@ -344,7 +344,7 @@ public class Parser {
 				this.accept(GrammarSymbols.LPAR);
 				Identifier identifierPrintln = new Identifier(this.accept(GrammarSymbols.ID));
 				this.accept(GrammarSymbols.RPAR);
-
+				this.accept(GrammarSymbols.SEMICOLON);
 				statementsReturn.add(new PrintlnStatement(identifierPrintln));
 
 				//Erro, fora do padrão
