@@ -258,7 +258,7 @@ public class Scanner {
 				|| pCurrentChar == '{' || pCurrentChar == '}' 	
 					|| pCurrentChar == '<' || pCurrentChar == '>' 	
 						|| pCurrentChar == '/' || pCurrentChar == '*'
-							|| pCurrentChar == '-' 	 	
+							|| pCurrentChar == '-' || pCurrentChar == '!'
 
 
 		){
@@ -275,6 +275,9 @@ public class Scanner {
 	 */
 	private int verificarPalavrasChaves (){
 
+		if(this.currentSpelling.toString().equals("println")){
+			return GrammarSymbols.PRINTLN;
+		}
 		if(this.currentSpelling.toString().equals("boolean")){
 			return GrammarSymbols.BOOLEAN;
 		}

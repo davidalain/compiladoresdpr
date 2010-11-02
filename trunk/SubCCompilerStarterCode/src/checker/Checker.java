@@ -110,16 +110,16 @@ public final class Checker implements Visitor {
 		}
 		if (stat.getArguments() == null){
 			if (funcao.getParameters() != null){
-				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
+				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			}
 		}
 		
 		else{
 			if (funcao.getParameters() == null){
-				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
+				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			}
 			if(stat.getArguments().size() != funcao.getParameters().size()){
-				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
+				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			}
 			int tamanho = stat.getArguments().size();
 			ArrayList<Identifier> argumentos = stat.getArguments();
