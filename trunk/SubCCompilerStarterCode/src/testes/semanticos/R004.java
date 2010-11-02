@@ -39,8 +39,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -67,8 +65,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -95,8 +91,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -123,8 +117,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -154,8 +146,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -182,8 +172,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -209,8 +197,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail(Mensagens.BOOLEAN_IF_WHILE);
@@ -239,8 +225,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail(Mensagens.BOOLEAN_IF_WHILE);
@@ -267,8 +251,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -295,8 +277,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -323,8 +303,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail(Mensagens.BOOLEAN_IF_WHILE);
@@ -351,8 +329,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());
@@ -379,8 +355,6 @@ public class R004 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.BOOLEAN_IF_WHILE, e.getMessage());

@@ -4,9 +4,7 @@ import junit.framework.TestCase;
 import parser.Parser;
 import parser.SyntacticException;
 import scanner.LexicalException;
-import testes.sintaticos.CaminhosArquivosTeste;
 import util.Mensagens;
-import util.AST.AST;
 import util.AST.Program;
 import checker.Checker;
 import checker.SemanticException;
@@ -41,8 +39,6 @@ public class R014 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			assertEquals(Mensagens.IDENTIFICADOR_JA_DECLARADO, e.getMessage());
@@ -69,8 +65,6 @@ public class R014 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
@@ -97,8 +91,6 @@ public class R014 extends TestCase {
 		} catch (SyntacticException e) {
 			e.printStackTrace();
 			fail("Erro sintático");
-		} catch (LexicalException e) {
-			fail("Erro léxico");
 		} catch (SemanticException e) {
 			// TODO Auto-generated catch block
 			fail("Código correto");
