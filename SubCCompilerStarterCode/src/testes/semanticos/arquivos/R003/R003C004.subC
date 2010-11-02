@@ -1,0 +1,17 @@
+void f(int a){
+	
+}
+
+void main()
+{
+	boolean a;
+
+	
+	a = (false);
+
+	
+	f(a);
+}
+
+
+

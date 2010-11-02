@@ -1,7 +1,11 @@
-void main(){}
-
-void a (){
-	if (true){
-	}
+void f(int a){
+	
 }
+
+void main()
+{
+	f();
+}
+
+
 

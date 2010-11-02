@@ -1,0 +1,6 @@
+void main(){}
+
+void f(){
+	void a;
+}
+

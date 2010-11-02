@@ -106,11 +106,15 @@ public final class Checker implements Visitor {
 			throw new SemanticException("Funcão "+nomeFuncao+" não foi declarada");
 		}
 		if (stat.getArguments() == null){
-			if (funcao.getParameters().size() != 0 ){
+			if (funcao.getParameters() != null){
 				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
 			}
 		}
+		
 		else{
+			if (funcao.getParameters() == null){
+				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
+			}
 			if(stat.getArguments().size() != funcao.getParameters().size()){
 				throw new SemanticException("Quantidade de argumentos imcompatíevis com a funcão "+nomeFuncao);
 			}

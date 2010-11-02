@@ -1,0 +1,11 @@
+
+double f(){
+		int a;
+		double b;
+		b = ((a+b));
+	}	
+void main(){
+
+	
+}
+

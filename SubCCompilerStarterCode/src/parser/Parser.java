@@ -51,6 +51,12 @@ public class Parser {
 
 	public Parser(String path){
 		this.scanner = new Scanner(path);
+		try {
+			this.currentToken = this.scanner.getNextToken();
+		} catch (LexicalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -114,7 +120,6 @@ public class Parser {
 	 */
 	private Program parseProgram() throws SyntacticException{
 		ArrayList<Command> commands = new ArrayList<Command>();
-
 		//Enquanto ainda não chegou no fim do código fonte
 		while(this.currentToken.getKind() != GrammarSymbols.EOT){
 

@@ -1,0 +1,8 @@
+void main(){}
+
+void f(){
+	int a;
+	double b;
+	boolean c;
+}
+

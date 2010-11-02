@@ -1,0 +1,15 @@
+
+
+void f(int a)
+{
+
+}
+
+void main()
+{
+	int a;
+	
+	a = (1);
+	
+	f(a);
+}

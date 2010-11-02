@@ -1,0 +1,13 @@
+
+void main(){
+	int a;
+	double b;
+	boolean c;
+	
+	a = (1);
+	b = (1.0);
+	c = ((b >= a));
+	
+	
+}
+
