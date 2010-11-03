@@ -1,13 +1,10 @@
-int c (int a, double d){
+void c (int a, double d){
 		int b;
 	
 	if (true){
-		return 1;	 
 	}
 	else {
-		return 1;
 	}
-	
 }
 
 void main (){
