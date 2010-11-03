@@ -123,7 +123,7 @@ public final class Checker implements Visitor {
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
 		}
-		else if((parametros == null) && (argumentos != null)){
+		else if((parametros == null) && (argumentos != null) && (argumentos.size() != 0)){
 			
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
@@ -199,8 +199,10 @@ public final class Checker implements Visitor {
 			s.visit(this, arg1);
 
 		}
-		if ( (existeRetorno == true)){
-
+		FunctionDeclaration fd = (FunctionDeclaration)arg;
+		
+		if ( (existeRetorno != true && !(fd.getReturnType().equals(new Type("void"))))){
+			throw new SemanticException("Funcao sem clausula return");
 		}
 
 
