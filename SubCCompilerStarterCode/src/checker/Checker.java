@@ -123,7 +123,8 @@ public final class Checker implements Visitor {
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
 		}
-		else if((parametros == null) && (argumentos.size() != 0)){
+		else if((parametros == null) && (argumentos != null)){
+			
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
 		}
