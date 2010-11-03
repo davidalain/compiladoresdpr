@@ -1,9 +1,31 @@
+int func(int a,double b){
+	
+	int c;
+	c = (0);
+	
+	if(true){
+		if(true){
+			if(true){
+				return 2;
+			}
+		}
+	}
+	
+	return c;
+}
+
+int func2(){
+	return 2;
+}
+
+
 void main(){
 
 	int a;
 	int b;
 	double c;
 	a = ((1*2));
+	
 	while (true){
 		if (true){
 			while (false){
@@ -12,6 +34,12 @@ void main(){
 		}
 	
 	}
+	
+	a = func2();
+	
+	println(a);
+	
+	return;
 	
 }
 

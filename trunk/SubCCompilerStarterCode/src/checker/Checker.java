@@ -72,14 +72,15 @@ public final class Checker implements Visitor {
 
 		Type expEsq = (Type)byExp.getLeftExpression().visit(this, arg);
 		Type expDir = (Type)byExp.getRightExpression().visit(this, arg);
+		
 		if (!expDir.equals(expEsq)){
 			throw new SemanticException("Operandos com tipos diferentes");
 		}
 
+		Type tipoRetorno = (Type) byExp.getOperator().visit(this, expDir);
+		byExp.setType(tipoRetorno);
 
-		Type operador = (Type) byExp.getOperator().visit(this, expDir);
-
-		return operador;
+		return tipoRetorno;
 	}
 
 	public Object visitBooleanValue(BooleanValue boo, Object arg) {
@@ -88,11 +89,15 @@ public final class Checker implements Visitor {
 
 	public Object visitBooleanUnaryExpression(BooleanUnaryExpression booUnExp,
 			Object arg) {
-
-		return booUnExp.getBooleanValue().visit(this, arg);
+		
+		Type tipoRetorno = (Type) booUnExp.getBooleanValue().visit(this, arg);
+		booUnExp.setType(tipoRetorno);
+		
+		return tipoRetorno; 
 	}
 
 	public Object visitBreakStatement(BreakStatement stat, Object arg) throws SemanticException {
+		
 		ArrayList<AST> argumentos = (ArrayList<AST>) arg;
 		if (argumentos.size() == 1){
 			throw new SemanticException("O break só pode ser usado dentro de escopo de um while");
@@ -104,26 +109,34 @@ public final class Checker implements Visitor {
 	public Object visitCallStatement(CallStatement stat, Object arg) throws SemanticException {
 
 		String nomeFuncao = stat.getFunctionName().getSpelling();
-		FunctionDeclaration funcao = (FunctionDeclaration)this.idTable.retrieve(nomeFuncao); 
+		FunctionDeclaration funcao = (FunctionDeclaration)this.idTable.retrieve(nomeFuncao);
+		
 		if(funcao == null){
 			throw new SemanticException("Funcão "+nomeFuncao+" não foi declarada");
 		}
-		if (stat.getArguments() == null){
-			if (funcao.getParameters() != null){
-				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
-			}
-		}
 		
-		else{
-			if (funcao.getParameters() == null){
+		ArrayList<Identifier> argumentos = stat.getArguments();
+		ArrayList<VariableDeclaration> parametros = funcao.getParameters();
+		
+		//Se algum argumento for iguail a null e o parametro correspondente não for null e tiver tamanho diferente de 0, implica exceção
+		if ((argumentos == null) && ((parametros != null) && (parametros.size() != 0))){
+			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
+			
+		}
+		else if((parametros == null) && (argumentos.size() != 0)){
+			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
+			
+		}
+		else if((parametros != null) && (argumentos != null)){
+			
+			//Se as quantidades dos parâmetros forem distintas, implica exceção
+			if(parametros.size() != argumentos.size()){
 				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
+				
 			}
-			if(stat.getArguments().size() != funcao.getParameters().size()){
-				throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
-			}
-			int tamanho = stat.getArguments().size();
-			ArrayList<Identifier> argumentos = stat.getArguments();
-			ArrayList<VariableDeclaration> parametros = funcao.getParameters();
+			
+			//Se algum tipo do argumento passado for diferente do tipo declarado na função, implica exceção
+			int tamanho = argumentos.size();
 			for(int i = 0 ; i < tamanho ; i++){
 				Type argumentoChamada = (Type) argumentos.get(i).visit(this, arg);
 				Type parametroFuncao = parametros.get(i).getType();
@@ -131,27 +144,23 @@ public final class Checker implements Visitor {
 				if(!argumentoChamada.equals(parametroFuncao)){
 					throw new SemanticException("Tipo do argumento "+argumentoChamada.getSpelling()+" incompatível");
 				}
-
 			}
 		}
-
-
-
+		
 		return funcao.getReturnType();
 	}
 
 	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) throws SemanticException {
-
-
-
+		
 		return callRHS.getFunctionCall().visit(this, arg);
-
-
+		
 	}
 
-	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {
+	public Object visitContinueStatement(ContinueStatement stat, Object arg) throws SemanticException {		
 		ArrayList<AST> argumentos = (ArrayList<AST>) arg;
-		if (argumentos.size() == 1){
+		
+		if ((argumentos.size() == 1) && !(argumentos.get(0) instanceof WhileStatement))
+		{			
 			throw new SemanticException("O continue só pode ser usado dentro de escopo de um while");
 			
 		}
@@ -240,7 +249,11 @@ public final class Checker implements Visitor {
 
 	public Object visitIdentifierUnaryExpression(
 			IdentifierUnaryExpression idUnExp, Object arg) throws SemanticException {
-		return idUnExp.getVariableName().visit(this, arg);
+		
+		Type tipoRetorno = (Type) idUnExp.getVariableName().visit(this, arg);
+		idUnExp.setType(tipoRetorno);
+		
+		return tipoRetorno;
 	}
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg) throws SemanticException {
@@ -282,7 +295,9 @@ public final class Checker implements Visitor {
 
 	public Object visitNumberUnaryExpression(NumberUnaryExpression numUnExp,
 			Object arg) {
-		return numUnExp.getNumberValue().visit(this, arg);
+		Type tipoRetorno = (Type) numUnExp.getNumberValue().visit(this, arg);
+		numUnExp.setType(tipoRetorno);
+		return tipoRetorno; 
 
 	}
 
@@ -344,7 +359,8 @@ public final class Checker implements Visitor {
 
 	public Object visitReturnStatement(ReturnStatement stat, Object arg) throws SemanticException {
 
-		ArrayList<Object> parametros = (ArrayList<Object>) arg;
+		ArrayList<AST> parametros = (ArrayList<AST>) arg;
+		
 		WhileStatement whileStat = null;
 		FunctionDeclaration funcao = (FunctionDeclaration) parametros.get(0);
 		
@@ -357,7 +373,7 @@ public final class Checker implements Visitor {
 
 		if (retorno == null){
 			if (!tipoRetornoFuncao.equals (new Type("void"))){
-				throw new SemanticException("O tipo de retorno é incompatível");
+				throw new SemanticException("O tipo de retorno da função "+funcao.getFunctionName().getSpelling()+" é incompatível");
 			}
 			else {
 				return new Type("void");
