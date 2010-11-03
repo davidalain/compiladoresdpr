@@ -77,10 +77,10 @@ public final class Checker implements Visitor {
 			throw new SemanticException("Operandos com tipos diferentes");
 		}
 
-		Type tipoRetorno = (Type) byExp.getOperator().visit(this, expDir);
-		byExp.setType(tipoRetorno);
+		Type tipo = (Type) byExp.getOperator().visit(this, expDir);
+		byExp.setType(tipo);
 
-		return tipoRetorno;
+		return tipo;
 	}
 
 	public Object visitBooleanValue(BooleanValue boo, Object arg) {
@@ -90,10 +90,10 @@ public final class Checker implements Visitor {
 	public Object visitBooleanUnaryExpression(BooleanUnaryExpression booUnExp,
 			Object arg) {
 		
-		Type tipoRetorno = (Type) booUnExp.getBooleanValue().visit(this, arg);
-		booUnExp.setType(tipoRetorno);
+		Type tipo = (Type) booUnExp.getBooleanValue().visit(this, arg);
+		booUnExp.setType(tipo);
 		
-		return tipoRetorno; 
+		return tipo; 
 	}
 
 	public Object visitBreakStatement(BreakStatement stat, Object arg) throws SemanticException {
@@ -142,7 +142,7 @@ public final class Checker implements Visitor {
 				Type parametroFuncao = parametros.get(i).getType();
 
 				if(!argumentoChamada.equals(parametroFuncao)){
-					throw new SemanticException("Tipo do argumento "+argumentoChamada.getSpelling()+" incompatível");
+					throw new SemanticException("Tipo do argumento "+(i+1)+" do tipo "+argumentoChamada.getSpelling()+" incompatível com a função "+stat.getFunctionName().getSpelling());
 				}
 			}
 		}
@@ -151,8 +151,10 @@ public final class Checker implements Visitor {
 	}
 
 	public Object visitCallStatementRHS(CallStatementRHS callRHS, Object arg) throws SemanticException {
-		
-		return callRHS.getFunctionCall().visit(this, arg);
+
+		Type tipo = (Type) callRHS.getFunctionCall().visit(this, arg);
+		callRHS.setTipo(tipo);
+		return tipo;
 		
 	}
 
@@ -169,6 +171,7 @@ public final class Checker implements Visitor {
 
 	public Object visitExpressionRHS(ExpressionRHS expRHS, Object arg) throws SemanticException {
 		Type tipo = (Type) expRHS.getExpression().visit(this, arg);
+		expRHS.setTipo(tipo);
 		return tipo;
 	}
 
@@ -250,10 +253,10 @@ public final class Checker implements Visitor {
 	public Object visitIdentifierUnaryExpression(
 			IdentifierUnaryExpression idUnExp, Object arg) throws SemanticException {
 		
-		Type tipoRetorno = (Type) idUnExp.getVariableName().visit(this, arg);
-		idUnExp.setType(tipoRetorno);
+		Type tipo = (Type) idUnExp.getVariableName().visit(this, arg);
+		idUnExp.setType(tipo);
 		
-		return tipoRetorno;
+		return tipo;
 	}
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg) throws SemanticException {
@@ -295,9 +298,9 @@ public final class Checker implements Visitor {
 
 	public Object visitNumberUnaryExpression(NumberUnaryExpression numUnExp,
 			Object arg) {
-		Type tipoRetorno = (Type) numUnExp.getNumberValue().visit(this, arg);
-		numUnExp.setType(tipoRetorno);
-		return tipoRetorno; 
+		Type tipo = (Type) numUnExp.getNumberValue().visit(this, arg);
+		numUnExp.setType(tipo);
+		return tipo; 
 
 	}
 
@@ -413,7 +416,7 @@ public final class Checker implements Visitor {
 		ArrayList<Statement> statWhile = stat.getStatements();
 		for (Statement s : statWhile){
 			
-			ArrayList<Object> whileAndFunction = (ArrayList<Object>) arg;
+			ArrayList<AST> whileAndFunction = (ArrayList<AST>) arg;
 			whileAndFunction.add(stat);
 			s.visit(this, whileAndFunction);
 
