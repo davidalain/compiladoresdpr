@@ -193,15 +193,11 @@ public final class Checker implements Visitor {
 		
 		//	int contadorRetornos = 0;
 		for (Statement s : statsFunBody){
-			if (s instanceof ReturnStatement){
-				existeRetorno = true;
-			}
 			s.visit(this, arg1);
 
 		}
 		FunctionDeclaration fd = (FunctionDeclaration)arg;
-		
-		if ( (existeRetorno != true && !(fd.getReturnType().equals(new Type("void"))))){
+		if ( (fd.isTemRetorno() != true && !(fd.getReturnType().equals(new Type("void"))))){
 			throw new SemanticException("Funcao sem clausula return");
 		}
 
@@ -369,6 +365,7 @@ public final class Checker implements Visitor {
 		
 		WhileStatement whileStat = null;
 		FunctionDeclaration funcao = (FunctionDeclaration) parametros.get(0);
+		funcao.setTemRetorno(true);
 		
 		if (parametros.size() == 2){
 			whileStat = (WhileStatement) parametros.get(1);

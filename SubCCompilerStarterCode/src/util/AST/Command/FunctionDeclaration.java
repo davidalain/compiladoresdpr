@@ -20,6 +20,7 @@ public class FunctionDeclaration extends Command {
 	private Identifier functionName;
 	private ArrayList<VariableDeclaration> parameters;
 	private FunctionBody functionBody;
+	private boolean temRetorno; 
 	
 	public FunctionDeclaration(Type type, Identifier function, ArrayList<VariableDeclaration> parameters, FunctionBody functionBody) {
 		this.returnType = type;
@@ -74,6 +75,14 @@ public class FunctionDeclaration extends Command {
 	@Override
 	public Object visit(Visitor v, Object arg) throws SemanticException {
 		return v.visitFunctionDeclaration(this, arg);
+	}
+
+	public boolean isTemRetorno() {
+		return temRetorno;
+	}
+
+	public void setTemRetorno(boolean temRetorno) {
+		this.temRetorno = temRetorno;
 	}
 	
 }
