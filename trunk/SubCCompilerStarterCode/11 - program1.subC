@@ -1,0 +1,65 @@
+int a;
+double b;
+boolean igual;
+
+int fatorialNaoRecursivo(int num) {
+    int retorno;
+    retorno = (1);
+
+    if ( (num > 0) ) {
+       while ( true ) {
+            retorno = ((retorno * num));
+            num = ((num - 1));
+            if ( (num == 0) ) {
+               break;
+            }
+      }
+      return retorno;
+    } else {
+      return 0;
+    }
+}
+
+int fatorialRecursivo(int num) {
+    int retorno;
+
+    if ( (num > 0) ) {
+       if ( (num == 1) ) {
+          return 1;
+       } else {
+         retorno = (num);
+         num = ((num - 1));
+         num = fatorialRecursivo(num);
+         retorno = ((retorno * num));
+         return retorno;
+       }
+    } else {
+      return 0;
+    }
+}
+
+void main() {
+     double c;
+     int res1;
+     int res2;
+
+     c = (5.3);
+     b = (c);
+     b = ((b+c));
+
+     a = (5);
+     res1 = fatorialNaoRecursivo(a);
+     res2 = fatorialRecursivo(a);
+
+     igual = (false);
+     if ( (res1 == res2) ) {
+        igual = (true);
+     }
+
+     println(a);
+     println(res1);
+     println(res2);
+     println(igual);
+
+     println(b);
+}
