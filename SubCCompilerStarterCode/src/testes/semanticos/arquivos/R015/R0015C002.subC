@@ -1,7 +1,0 @@
-double f(){
-		double b;
-		b = (1.0);
-		return b;
-	}	
-
-
