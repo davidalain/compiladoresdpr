@@ -1,4 +1,4 @@
-package codeGeneration;
+package encoder;
 
 public class Instruction {
 	
