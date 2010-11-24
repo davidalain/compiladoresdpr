@@ -2,7 +2,6 @@ package encoder;
 
 import java.util.ArrayList;
 
-import codeGeneration.Instruction;
 
 import util.AST.Program;
 import util.AST.Command.Command;
@@ -31,7 +30,7 @@ import util.AST.Terminal.Type;
 import checker.SemanticException;
 import checker.Visitor;
 
-public class Encoder implements Visitor{
+public class Encoder implements Visitor {
 
 	ArrayList<Instruction> instrucoes = new ArrayList<Instruction>();
 	
