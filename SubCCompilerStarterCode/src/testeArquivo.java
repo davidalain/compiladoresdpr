@@ -26,7 +26,8 @@ public class testeArquivo {
 			Parser parser = new Parser();
 			Program prog = (Program) parser.parse();
 			Checker checker = new Checker();
-			checker.check(prog);
+			checker.check(prog).toString(40);
+//			System.out.println(checker.check(prog).toString(40));
 			
 //			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
 			
@@ -35,7 +36,6 @@ public class testeArquivo {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		System.out.println("FIM");
 		
 		
 	}

@@ -1,16 +1,5 @@
-void c (int a, double d){
-		int b;
-	
-	if (true){
-	}
-	else {
-	}
-}
+int a;
+int b;
 
 void main (){
-	int b;
-	double e;
-	c(b,e);
-	
-
 }
