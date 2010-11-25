@@ -33,24 +33,14 @@ import checker.Visitor;
 public class Encoder implements Visitor {
 
 	ArrayList<Instruction> instrucoes = new ArrayList<Instruction>();
+	int posicaoInstrucaoSessaoData = 2;
 	
-	public void emit(byte op , byte r , byte n , short d) {
-		this.instrucoes.add(new Instruction(op, r, n, d));
-	}
 	
-	private static short valuation (String intLit){
-		return 0;
-	}
-	
-	private void encodeFetch (Identifier id){
-		
-	}
-	
-	private void encodeAssign (Identifier id){
-		
+	private void emit(int tipo, String op1, String op2,
+			String tamanho) {
+		this.instrucoes.add(new Instruction(tipo, op1, op2, tamanho));
 	}
 
-	
 	public void encode(Program prog) throws SemanticException{
 		prog.visit(this, null);
 	}
@@ -58,18 +48,25 @@ public class Encoder implements Visitor {
 	public Object visitProgram(Program prog, Object arg)
 			throws SemanticException {
 
+		emit(InstructionType.EXTERN,"_printf","","");
+		emit(InstructionType.SECTION,".text","","");
+		emit(InstructionType.SECTION,".data","","");
 		ArrayList<Command> comandos = prog.getCommands();
 		for (Command com : comandos){
-			com.visit(this, arg);
+			//se for declaracao de variavel global, passa o prog pra ele saber
+			com.visit(this, prog);
 		}
-		
-		this.emit(Instruction.HALTop,(byte)0,(byte)0,(short)0);
 		return null;
 	}
 
+
 	public Object visitVariableDeclaration(VariableDeclaration decl, Object arg)
 			throws SemanticException {
-		// TODO Auto-generated method stub
+		//se for variavel global, jogar ela na sessão data;
+		if (arg instanceof Program){
+			emit(InstructionType.SECTION,".data",decl.getIdentifier().getSpelling(),decl.getType().getSpelling());
+		}
+		
 		return null;
 	}
 
@@ -95,7 +92,7 @@ public class Encoder implements Visitor {
 			throws SemanticException {
 		
 		stat.getRightHandStatement().visit(this, arg);
-		this.encodeAssign(stat.getVariableName());
+		//this.encodeAssign(stat.getVariableName());
 		
 		return null;
 	}

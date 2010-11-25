@@ -1,52 +1,105 @@
 package encoder;
 
+
 public class Instruction {
 	
-	public static final byte LOADop 	= 0;
-	public static final byte LOADAop 	= 1;
-	public static final byte LOADIop 	= 2;
-	public static final byte LOADLop 	= 3;
-	public static final byte STOREop 	= 4;
-	public static final byte STOREIop 	= 5;
-	public static final byte CALLop 	= 6;
-	public static final byte CALLIop 	= 7;
-	public static final byte RETURNop 	= 8;
-	public static final byte PUSHop 	= 10;
-	public static final byte POPop 		= 11;
-	public static final byte JUMPop 	= 12;
-	public static final byte JUMPIop 	= 13;
-	public static final byte JUMPIFop 	= 14;
-	public static final byte HALTop 	= 15;
+	private int tipo; // op-code (0 .. 15)
+	private String op1; // register field (0 .. 15)
+	private String op2; // length field (0 .. 255)
+	private String tamanho; // operand field (-32767 .. +32767)
+	private StringBuffer instr;
+	
+
 	
 	
-	public static final byte CBr = 0;
-	public static final byte CTr = 1;
-	public static final byte PBr = 2;
-	public static final byte PTr = 3;
-	public static final byte SBr = 4;
-	public static final byte STr = 5;
-	public static final byte HBr = 6;
-	public static final byte HTr = 7;
-	public static final byte LBr = 8;
-	public static final byte L1r = 9;
-	public static final byte L2r = 10;
-	public static final byte L3r = 11;
-	public static final byte L4r = 12;
-	public static final byte L5r = 13;
-	public static final byte L6r = 14;
-	public static final byte CPr = 15;
-	
-	
-	public byte op; // op-code (0 .. 15)
-	public byte r; // register field (0 .. 15)
-	public byte n; // length field (0 .. 255)
-	public short d; // operand field (-32767 .. +32767)
-	
-	public Instruction(byte op , byte r , byte n , short d){
-		this.op = op;
-		this.r = r;
-		this.n = n;
-		this.d = d;
+	public Instruction(int tipo, String op1, String op2, String tamanho) {
+		this.tipo = tipo;
+		this.op1 = op1;
+		this.op2 = op2;
+		this.tamanho = tamanho;
+		criarInstrucao();
+		
 	}
+	public int getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getOp1() {
+		return op1;
+	}
+
+	public void setOp1(String op1) {
+		this.op1 = op1;
+	}
+
+	public String getOp2() {
+		return op2;
+	}
+
+	public void setOp2(String op2) {
+		this.op2 = op2;
+	}
+
+	public String getTamanho() {
+		return tamanho;
+	}
+
+	public void setTamanho(String tamanho) {
+		this.tamanho = tamanho;
+	}
+	
+	private void inserirArquivo(){
+		//TODO criar classe para inserir as instrucões no arquivo
+	}
+	public void criarInstrucao(){
+		if (getTipo() == InstructionType.EXTERN){
+			criarInstrucaoExtern();
+		}
+		if (getTipo() == InstructionType.SECTION){
+			this.instr.append("Section " + getOp1());
+			this.instr.append("\n");
+			if (getOp1().equals(".text")){
+				criarInstrucaoSectionText();
+			}
+			else if (getOp1().equals(".data")){
+				criarInstrucaoSectionData();
+			}
+		}
+	
+	
+	}
+	private void criarInstrucaoSectionData() {
+		if (!getOp2().equals("")){
+			this.instr.append("\t" + "const1: dq 5.3 ; Declara constante double const1 com valor 5.3");
+			this.instr.append("\n");
+			this.instr.append("\t" + "intFormat: db \"%d\", 10, 0");
+			this.instr.append("\n");
+			this.instr.append("\t" + "doubleFormat: db \"%.2f\", 10, 0");
+			this.instr.append("\n");
+		}
+		if (getTamanho().equals("int") || getTamanho().equals("boolean")){
+			this.instr.append(getOp2()+ ":" + " dd 0");
+		}
+		if (getTamanho().equals("double")){
+			this.instr.append(getOp2() + ":" + "dq 0.0");
+		}
+	}
+	
+	private void criarInstrucaoSectionText() {
+		this.instr.append("\t" + "global _WinMain@16");
+	}
+	private void criarInstrucaoExtern() {
+		this.instr.append("extern " + getOp1());
+	}
+	
+
+
+
+	
+	
 	
 }

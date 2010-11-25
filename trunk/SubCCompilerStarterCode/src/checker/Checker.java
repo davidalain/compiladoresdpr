@@ -39,9 +39,9 @@ public final class Checker implements Visitor {
 		idTable = new IdentificationTable();
 
 	}
-	public void check(Program prog) throws SemanticException{
+	public AST check(Program prog) throws SemanticException{
 
-		prog.visit(this, null);
+		return (AST) prog.visit(this, null);
 
 	}
 
