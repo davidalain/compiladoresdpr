@@ -2,7 +2,9 @@ package encoder;
 
 import java.util.ArrayList;
 
+import compiler.Properties;
 
+import util.Arquivo;
 import util.AST.Program;
 import util.AST.Command.Command;
 import util.AST.Command.FunctionBody;
@@ -32,25 +34,43 @@ import checker.Visitor;
 
 public class Encoder implements Visitor {
 
-	ArrayList<Instruction> instrucoes = new ArrayList<Instruction>();
-	int posicaoInstrucaoSessaoData = 2;
+	private ArrayList<Instruction> codigo;
+	private int posicaoInstrucaoSessaoData; 
+	private Arquivo arquivo;
 	
+	public Encoder (){
+		this.codigo = new ArrayList<Instruction>();
+		this.posicaoInstrucaoSessaoData = 2;
+		this.arquivo = new Arquivo(Properties.sourceCodeLocation,"ArquivoSaida.asm" );
+	}
 	
 	private void emit(int tipo, String op1, String op2,
-			String tamanho) {
-		this.instrucoes.add(new Instruction(tipo, op1, op2, tamanho));
+			String op3) {
+		this.codigo.add(new Instruction(tipo, op1, op2, op3));
 	}
+	
 
 	public void encode(Program prog) throws SemanticException{
 		prog.visit(this, null);
+		this.gravarArquivo();
 	}
 	
+	private void gravarArquivo() {
+		for (Instruction ins : codigo){
+			String instrucaoAtual = ins.toString();
+			this.arquivo.println(instrucaoAtual);
+		}
+		this.arquivo.close();
+	}
+
+
 	public Object visitProgram(Program prog, Object arg)
 			throws SemanticException {
 
-		emit(InstructionType.EXTERN,"_printf","","");
-		emit(InstructionType.SECTION,".text","","");
-		emit(InstructionType.SECTION,".data","","");
+		this.emit(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
+		this.emit(InstructionType.SECTION,InstructionType.DATA,null,null);
+		this.emit(InstructionType.SECTION,InstructionType.TEXT,null,null);
+
 		ArrayList<Command> comandos = prog.getCommands();
 		for (Command com : comandos){
 			//se for declaracao de variavel global, passa o prog pra ele saber
@@ -64,7 +84,13 @@ public class Encoder implements Visitor {
 			throws SemanticException {
 		//se for variavel global, jogar ela na sessão data;
 		if (arg instanceof Program){
-			emit(InstructionType.SECTION,".data",decl.getIdentifier().getSpelling(),decl.getType().getSpelling());
+			Instruction variavelGlobal = new Instruction(InstructionType.VARIAVEL_GLOBAL, //variavel global 
+					decl.getIdentifier().getSpelling(), //nomeVariavel
+					decl.getType().getSpelling(), //TipoVariavel
+					null); 
+			
+			this.codigo.add(this.posicaoInstrucaoSessaoData, variavelGlobal);
+			this.posicaoInstrucaoSessaoData++;
 		}
 		
 		return null;
