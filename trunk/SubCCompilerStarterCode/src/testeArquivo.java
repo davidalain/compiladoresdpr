@@ -1,7 +1,10 @@
+import java.util.ArrayList;
+
 import parser.Parser;
 import parser.SyntacticException;
 import util.AST.Program;
 import checker.Checker;
+import encoder.Encoder;
 
 
 public class testeArquivo {
@@ -21,22 +24,18 @@ public class testeArquivo {
 		 *  token = scanner.getNextToken();
 		 * }
 		 */
-		
 		try{
 			Parser parser = new Parser();
 			Program prog = (Program) parser.parse();
 			Checker checker = new Checker();
-			checker.check(prog).toString(40);
-//			System.out.println(checker.check(prog).toString(40));
-			
-//			System.out.println("\nArvore AST:\n\n"+parser.parse().toString(40));
-			
+			Encoder encoder = new Encoder();
+			checker.check(prog);
+			encoder.encode(prog);
 			
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
 		
 	}
 
