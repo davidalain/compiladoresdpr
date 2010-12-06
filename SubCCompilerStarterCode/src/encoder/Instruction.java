@@ -76,7 +76,7 @@ public class Instruction {
 				System.out.println("------------------------------------------------------------");
 				System.out.println("Erro ao criar a string da instrução: TIPO PASSADO INCORRETO");
 				System.out.println("Olhar as constantes em InstructionType");
-				System.out.println("tipo:"+this.getTipo()+" , op1:"+this.getOp1()+" , op2:"+this.getOp2()+" , op3"+this.getOp3());
+				System.out.println("tipo:"+this.getTipo()+" , op1:"+this.getOp1()+" , op2:"+this.getOp2()+" , op3:"+this.getOp3());
 				System.out.println("------------------------------------------------------------");
 				break;
 		}
