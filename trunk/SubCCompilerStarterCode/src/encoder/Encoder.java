@@ -35,20 +35,18 @@ import checker.Visitor;
 public class Encoder implements Visitor {
 
 	private ArrayList<Instruction> codigo;
-	private int posicaoInstrucaoSessaoData; 
+	private int posicaoInstrucaoSessaoData;
 	private Arquivo arquivo;
 	
 	public Encoder (){
 		this.codigo = new ArrayList<Instruction>();
 		this.posicaoInstrucaoSessaoData = 2;
-		this.arquivo = new Arquivo(Properties.sourceCodeLocation,"ArquivoSaida.asm" );
+		this.arquivo = new Arquivo(Properties.sourceCodeLocation,"ArquivoSaida.asm");
 	}
 	
-	private void emit(int tipo, String op1, String op2,
-			String op3) {
+	private void emit(int tipo, String op1, String op2,String op3) {
 		this.codigo.add(new Instruction(tipo, op1, op2, op3));
 	}
-	
 
 	public void encode(Program prog) throws SemanticException{
 		prog.visit(this, null);
@@ -67,9 +65,11 @@ public class Encoder implements Visitor {
 	public Object visitProgram(Program prog, Object arg)
 			throws SemanticException {
 
-		this.emit(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
-		this.emit(InstructionType.SECTION,InstructionType.DATA,null,null);
-		this.emit(InstructionType.SECTION,InstructionType.TEXT,null,null);
+		//this.emit(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
+		//Comentado, se não tiver println, não pode adicionar o extern
+		
+		this.emit(InstructionType.SECTION,InstructionType.DATA, null, null);
+		this.emit(InstructionType.SECTION,InstructionType.TEXT, null, null);
 
 		ArrayList<Command> comandos = prog.getCommands();
 		for (Command com : comandos){
@@ -98,7 +98,11 @@ public class Encoder implements Visitor {
 
 	public Object visitFunctionDeclaration(FunctionDeclaration decl, Object arg)
 			throws SemanticException {
-		// TODO Auto-generated method stub
+		
+		this.emit(InstructionType.FUNCAO, decl.getFunctionName().getSpelling(), null, null);
+		
+		//TODO: Criar as intruções específicas da função
+		
 		return null;
 	}
 
@@ -155,7 +159,30 @@ public class Encoder implements Visitor {
 
 	public Object visitPrintlnStatement(PrintlnStatement stat, Object arg)
 			throws SemanticException {
-		// TODO Auto-generated method stub
+		
+		boolean encontrouExternPrintln = false;
+		if(this.codigo.size() > 0){
+			Instruction inst = this.codigo.get(0); 
+			if(	inst.getTipo() == InstructionType.EXTERN &&
+				inst.getOp1().equals(InstructionType.PRINTF))
+			{
+				encontrouExternPrintln = true;
+			}
+		}
+		
+		if(!encontrouExternPrintln){
+			Instruction instrucao = new Instruction(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
+			this.codigo.add(0, instrucao);
+		}
+			
+		//TODO: Código de chamar o println
+		
+
+
+		
+		
+		
+		
 		return null;
 	}
 

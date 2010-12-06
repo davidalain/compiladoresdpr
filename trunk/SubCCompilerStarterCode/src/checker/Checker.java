@@ -123,8 +123,7 @@ public final class Checker implements Visitor {
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
 		}
-		else if((parametros == null) && (argumentos != null) && (argumentos.size() != 0)){
-			
+		else if((parametros == null) && (argumentos.size() != 0)){
 			throw new SemanticException("Quantidade de argumentos incompatíevis com a funcão "+nomeFuncao);
 			
 		}
@@ -193,12 +192,14 @@ public final class Checker implements Visitor {
 		
 		//	int contadorRetornos = 0;
 		for (Statement s : statsFunBody){
+			if (s instanceof ReturnStatement){
+				existeRetorno = true;
+			}
 			s.visit(this, arg1);
 
 		}
-		FunctionDeclaration fd = (FunctionDeclaration)arg;
-		if ( (fd.isTemRetorno() != true && !(fd.getReturnType().equals(new Type("void"))))){
-			throw new SemanticException("Funcao sem clausula return");
+		if ( (existeRetorno == true)){
+
 		}
 
 
@@ -215,7 +216,7 @@ public final class Checker implements Visitor {
 		if (parametros != null){
 			for (VariableDeclaration vd : parametros){
 				String nomeParametro = vd.getIdentifier().getSpelling();
-				this.idTable.enter(nomeParametro, decl);
+				this.idTable.enter(nomeParametro, vd);
 			}
 		}
 		//problemas para retorno de função
@@ -352,10 +353,15 @@ public final class Checker implements Visitor {
 		for (Command c: comandos){
 			c.visit(this, arg);
 		}
+		
 		FunctionDeclaration funcaoMain = (FunctionDeclaration) idTable.retrieve("main");
-		if ( (funcaoMain == null) || !(funcaoMain.getReturnType().getSpelling().equals("void"))){
-			throw new SemanticException("O código deve ter uma função void main()");
+		if ( 	(funcaoMain == null) ||
+				!(funcaoMain.getReturnType().getSpelling().equals("void")) ||
+				((funcaoMain.getParameters() != null) && (funcaoMain.getParameters().size() > 0))
+			){
+			throw new SemanticException("O código deve ter uma função: void main()");
 		}
+		
 		return null;
 	}
 
@@ -365,7 +371,6 @@ public final class Checker implements Visitor {
 		
 		WhileStatement whileStat = null;
 		FunctionDeclaration funcao = (FunctionDeclaration) parametros.get(0);
-		funcao.setTemRetorno(true);
 		
 		if (parametros.size() == 2){
 			whileStat = (WhileStatement) parametros.get(1);

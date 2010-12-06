@@ -49,26 +49,40 @@ public class Instruction {
 	}
 
 	private String criarInstrucao(){
-		if (getTipo() == InstructionType.EXTERN){
-			return this.criarInstrucaoExtern();
-		}
-		else if (getTipo() == InstructionType.SECTION){
-			this.retorno.append(InstructionType.NAME_SECTION);
-			this.retorno.append(" ");
-			this.retorno.append(this.getOp1());
-			if (getOp1().equals(InstructionType.TEXT)){
-				return this.criarInstrucaoSectionText();
+		String retorno = null;
+		switch (this.getTipo()) {
+			case InstructionType.EXTERN:{
+				retorno =  this.criarInstrucaoExtern();
+				break;
 			}
-			else if (getOp1().equals(InstructionType.DATA)){
-				return this.criarInstrucaoSectionData();
+			case InstructionType.SECTION:{
+				this.retorno.append(InstructionType.NAME_SECTION);
+				this.retorno.append(" ");
+				this.retorno.append(this.getOp1());
+				if (getOp1().equals(InstructionType.TEXT)){
+					retorno =  this.criarInstrucaoSectionText();
+				}
+				else if (getOp1().equals(InstructionType.DATA)){
+					retorno =  this.criarInstrucaoSectionData();
+					
+				}
+				break;
 			}
+			case InstructionType.VARIAVEL_GLOBAL:{
+				retorno = this.criarInstrucaoVariavelGlobal();
+				break;
+			}
+			default:
+				System.out.println("------------------------------------------------------------");
+				System.out.println("Erro ao criar a string da instrução: TIPO PASSADO INCORRETO");
+				System.out.println("Olhar as constantes em InstructionType");
+				System.out.println("tipo:"+this.getTipo()+" , op1:"+this.getOp1()+" , op2:"+this.getOp2()+" , op3"+this.getOp3());
+				System.out.println("------------------------------------------------------------");
+				break;
 		}
-		else if (getTipo() == InstructionType.VARIAVEL_GLOBAL){
-			return this.criarInstrucaoVariavelGlobal();
-		}
-
-		return null;
+		return retorno;
 	}
+	
 	private String criarInstrucaoVariavelGlobal() {
 //		  a: dd 0 ; Declara variável global int a com 32 bits e inicializa com 0
 //		  b: dq 0.0 ; Declara variável global double b com 64 bits e inicializa com 0.0
