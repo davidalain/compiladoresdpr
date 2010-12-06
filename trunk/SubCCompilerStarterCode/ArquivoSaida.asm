@@ -3,4 +3,6 @@ SECTION .data
 	doubleFormat: db "%.2f", 10, 0
 SECTION .text
 	global _WinMain@16
+	a: dd 0
+	b: dq 0.0
 null
