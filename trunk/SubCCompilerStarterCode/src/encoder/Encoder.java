@@ -36,16 +36,22 @@ public class Encoder implements Visitor {
 
 	private ArrayList<Instruction> codigo;
 	private int posicaoInstrucaoSessaoData;
+	private int indiceConstante;
 	private Arquivo arquivo;
 	
 	public Encoder (){
 		this.codigo = new ArrayList<Instruction>();
-		this.posicaoInstrucaoSessaoData = 2;
+		this.posicaoInstrucaoSessaoData = 1;
+		this.indiceConstante = 1;
 		this.arquivo = new Arquivo(Properties.sourceCodeLocation,"ArquivoSaida.asm");
 	}
 	
 	private void emit(int tipo, String op1, String op2,String op3) {
 		this.codigo.add(new Instruction(tipo, op1, op2, op3));
+	}
+	
+	private void emit(int tipo, String op1) {
+		this.codigo.add(new Instruction(tipo, op1, null, null));
 	}
 
 	public void encode(Program prog) throws SemanticException{
@@ -68,8 +74,8 @@ public class Encoder implements Visitor {
 		//this.emit(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
 		//Comentado, se não tiver println, não pode adicionar o extern
 		
-		this.emit(InstructionType.SECTION,InstructionType.DATA, null, null);
-		this.emit(InstructionType.SECTION,InstructionType.TEXT, null, null);
+		this.emit(InstructionType.SECTION,InstructionType.DATA);
+		this.emit(InstructionType.SECTION,InstructionType.TEXT);
 
 		ArrayList<Command> comandos = prog.getCommands();
 		for (Command com : comandos){
@@ -91,6 +97,11 @@ public class Encoder implements Visitor {
 			
 			this.codigo.add(this.posicaoInstrucaoSessaoData, variavelGlobal);
 			this.posicaoInstrucaoSessaoData++;
+		}else{
+			//Variável não é global
+			
+			this.encodeFetch(decl.getIdentifier());
+			
 		}
 		
 		return null;
@@ -99,7 +110,7 @@ public class Encoder implements Visitor {
 	public Object visitFunctionDeclaration(FunctionDeclaration decl, Object arg)
 			throws SemanticException {
 		
-		this.emit(InstructionType.FUNCAO, decl.getFunctionName().getSpelling(), null, null);
+		this.emit(InstructionType.FUNCAO, decl.getFunctionName().getSpelling());
 		
 		//TODO: Criar as intruções específicas da função
 		
@@ -122,9 +133,18 @@ public class Encoder implements Visitor {
 			throws SemanticException {
 		
 		stat.getRightHandStatement().visit(this, arg);
-		//this.encodeAssign(stat.getVariableName());
+		this.encodeAssign(stat.getVariableName());
 		
 		return null;
+	}
+
+	private void encodeAssign(Identifier variableName) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void encodeFetch(Identifier variableName){
+		
 	}
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg)
@@ -173,15 +193,22 @@ public class Encoder implements Visitor {
 		if(!encontrouExternPrintln){
 			Instruction instrucao = new Instruction(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
 			this.codigo.add(0, instrucao);
-		}
 			
+			this.posicaoInstrucaoSessaoData = 2;
+		}
 		//TODO: Código de chamar o println
 		
-
-
+		//O visit coloca na pilha o valor a ser mostrado
+		stat.getVariableName().visit(this, arg);
 		
+		//O tipo é necessário para saber qual instrução chamar,
+		//já que as instruções de inteiro são distintas das de ponto flutuante
+		String tipo = ((VariableDeclaration)stat.getVariableName().getNoDeclaracao()).getType().getSpelling();
+		this.emit(InstructionType.FUNCAO, InstructionType.PRINTF, tipo, null);
 		
-		
+		//Desempilha os dois ultimos valores da pilha que foram o valor e formato do printf
+		this.emit(InstructionType.DESEMPILHAR, null);
+		this.emit(InstructionType.DESEMPILHAR, null);
 		
 		return null;
 	}
