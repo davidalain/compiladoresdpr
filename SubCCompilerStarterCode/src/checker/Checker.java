@@ -50,7 +50,6 @@ public final class Checker implements Visitor {
 		Type tipoVariavel = (Type) stat.getVariableName().visit(this, arg);
 		Command vd = (Command) idTable.retrieve(stat.getVariableName().getSpelling());
 		
-		
 		if (vd == null){
 			throw new SemanticException("Variavel não foi declarada");
 		}
