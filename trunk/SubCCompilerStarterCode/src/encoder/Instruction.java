@@ -51,42 +51,60 @@ public class Instruction {
 	private String criarInstrucao(){
 		String retorno = null;
 		switch (this.getTipo()) {
-			case InstructionType.EXTERN:{
-				retorno =  this.criarInstrucaoExtern();
-				break;
+		
+		case InstructionType.EXTERN:{
+			retorno =  this.criarInstrucaoExtern();
+			break;
+		}
+		case InstructionType.SECTION:{
+			this.retorno.append(InstructionType.NAME_SECTION);
+			this.retorno.append(" ");
+			this.retorno.append(this.getOp1());
+			if (getOp1().equals(InstructionType.TEXT)){
+				retorno =  this.criarInstrucaoSectionText();
 			}
-			case InstructionType.SECTION:{
-				this.retorno.append(InstructionType.NAME_SECTION);
-				this.retorno.append(" ");
-				this.retorno.append(this.getOp1());
-				if (getOp1().equals(InstructionType.TEXT)){
-					retorno =  this.criarInstrucaoSectionText();
-				}
-				else if (getOp1().equals(InstructionType.DATA)){
-					retorno =  this.criarInstrucaoSectionData();
-					
-				}
-				break;
+			else if (getOp1().equals(InstructionType.DATA)){
+				retorno =  this.criarInstrucaoSectionData();
+
 			}
-			case InstructionType.VARIAVEL_GLOBAL:{
-				retorno = this.criarInstrucaoVariavelGlobal();
-				break;
-			}
-			default:
+			break;
+		}
+		case InstructionType.VARIAVEL_GLOBAL:{
+			retorno = this.criarInstrucaoVariavelGlobal();
+			break;
+		}
+		case InstructionType.FUNCAO_LABEL:{
+			retorno = this.criarInstrucaoFuncao();
+			break;
+		}
+
+
+
+
+		default:
+			/*
 				System.out.println("------------------------------------------------------------");
 				System.out.println("Erro ao criar a string da instrução: TIPO PASSADO INCORRETO");
 				System.out.println("Olhar as constantes em InstructionType");
 				System.out.println("tipo:"+this.getTipo()+" , op1:"+this.getOp1()+" , op2:"+this.getOp2()+" , op3:"+this.getOp3());
 				System.out.println("------------------------------------------------------------");
 				break;
+			 */
 		}
 		return retorno;
 	}
+
+	private String criarInstrucaoFuncao() {
+		this.retorno.append("\t");
+		this.retorno.append("_" + this.getOp1() + ":");
+		return this.retorno.toString();
 	
+	}
+
 	private String criarInstrucaoVariavelGlobal() {
-//		  a: dd 0 ; Declara variável global int a com 32 bits e inicializa com 0
-//		  b: dq 0.0 ; Declara variável global double b com 64 bits e inicializa com 0.0
-//		  igual: dd 0 ; Declara variável global boolean c com 32 bits (0 - false, 1 - true)
+		//		  a: dd 0 ; Declara variável global int a com 32 bits e inicializa com 0
+		//		  b: dq 0.0 ; Declara variável global double b com 64 bits e inicializa com 0.0
+		//		  igual: dd 0 ; Declara variável global boolean c com 32 bits (0 - false, 1 - true)
 		this.retorno.append("\t");
 		this.retorno.append(this.getOp1() + ":");
 		this.retorno.append(" ");

@@ -1,0 +1,10 @@
+pcasm-book.pdf
+
+página 51 (pdf)
+- tem os controles jump do nasm
+
+página 75 (pdf)
+capitulo 4 - Subprograms
+
+
+http://pastebin.com/G5AVwcH1 encode fetch

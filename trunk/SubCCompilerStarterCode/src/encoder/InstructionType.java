@@ -6,7 +6,7 @@ public interface InstructionType {
 	public static final int SECTION = 1;
 	public static final int VARIAVEL_GLOBAL = 2;
 	public static final int CONSTANTE_DOUBLE = 3; //quando chegar nos *body;
-	public static final int FUNCAO = 4;
+	public static final int FUNCAO_LABEL = 4;
 	
 	public static final int EMPILHAR = 6;
 	public static final int DESEMPILHAR = 7;
