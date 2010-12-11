@@ -77,7 +77,61 @@ public class Instruction {
 			retorno = this.criarInstrucaoFuncao();
 			break;
 		}
+		case InstructionType.PUSH:{
+			retorno = this.criarInstrucaoPush();
+			break;
+		}
+		case InstructionType.FLD:{
+			retorno = this.criarInstrucaoFLD();
+			break;
+		}
+		case InstructionType.MOV:{
+			retorno = "mov " + this.getOp1() + ", " + this.getOp2();
+			break;
+		}
+		case InstructionType.SUB:{
+			retorno = "sub " + this.getOp1() + ", " + this.getOp2();
+			break;
+		}
+		case InstructionType.ADD:{
+			retorno = "add " + this.getOp1() + ", " + this.getOp2();
+			break;
+		}
+		case InstructionType.MULT:{
+			retorno = "imul " + this.getOp1()+ ", " + this.getOp2();
+			break;
+		}
+		case InstructionType.DIV:{
+			retorno = "idiv " + this.getOp1()+ ", " + this.getOp2();
+			break;
+		}
 
+		case InstructionType.ADD_FLOAT:{
+			retorno =  "faddp " + this.getOp1();
+			break;
+		}
+		case InstructionType.SUB_FLOAT:{
+			retorno =  "fsubp " + this.getOp1();
+			break;
+		}
+		case InstructionType.MULT_FLOAT:{
+			retorno =  "fimul " + this.getOp1();
+			break;
+		}
+		case InstructionType.DIV_FLOAT:{
+			retorno =  "fidiv " + this.getOp1();
+			break;
+		}
+		case InstructionType.CMP:{
+			retorno = "cmp " + this.getOp1() + ", " + this.getOp2();
+			
+		}
+
+		case InstructionType.POP:{
+			retorno = this.criarInstrucaoPOP();
+			break;
+		}
+	
 
 
 
@@ -90,6 +144,49 @@ public class Instruction {
 				System.out.println("------------------------------------------------------------");
 				break;
 			 */
+		}
+		return retorno;
+	}
+
+	private String criarInstrucaoPOP() {
+		String retorno = null;
+		
+		if(this.getOp2() == null && this.getOp3() == null){
+			//pop ebp ;
+			retorno = "pop " + this.getOp1() ;
+			
+		}else if (this.getOp2() != null && this.getOp3() == null){
+		    //pop dword 1 ;				
+			retorno = "pop " + this.getOp1() + " " + this.getOp2();
+			
+		}else{
+			//pop dword [ebp+8] ;				
+			retorno = "pop " + this.getOp1() + "[" + this.getOp2() + "+" + this.getOp3() + "]";
+		}
+		return retorno;
+
+	}
+
+	private String criarInstrucaoFLD() {
+		String retorno = "";
+		retorno += "fld " + this.getOp1() + "[" + this.getOp2()+ "]";
+		return retorno;
+	}
+
+	private String criarInstrucaoPush() {
+		String retorno = null;
+		
+		if(this.getOp2() == null && this.getOp3() == null){
+			//push ebp ;
+			retorno = "push " + this.getOp1() ;
+			
+		}else if (this.getOp2() != null && this.getOp3() == null){
+		    //push dword 1 ;				
+			retorno = "push " + this.getOp1() + " " + this.getOp2();
+			
+		}else{
+			//push dword [ebp+8] ;				
+			retorno = "push " + this.getOp1() + "[" + this.getOp2() + "+" + this.getOp3() + "]";
 		}
 		return retorno;
 	}

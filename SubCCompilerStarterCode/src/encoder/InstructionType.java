@@ -8,21 +8,26 @@ public interface InstructionType {
 	public static final int CONSTANTE_DOUBLE = 3; //quando chegar nos *body;
 	public static final int FUNCAO_LABEL = 4;
 	
-	public static final int EMPILHAR = 6;
-	public static final int DESEMPILHAR = 7;
-	public static final int MOVER = 8;
-	public static final int COMPARACAO = 9;
+	public static final int PUSH = 6;
+	public static final int POP = 7;
+	public static final int MOV = 8;
+	public static final int CMP = 9;
 	
-	public static final int SOMA = 10;
-	public static final int SUBTRACAO = 11;
-	public static final int MULTIPLICACAO = 12;
-	public static final int DIVISAO = 13;
+	public static final int ADD = 10;
+	public static final int SUB = 11;
+	public static final int MULT = 12;
+	public static final int DIV = 13;
 	
-	public static final int DESVIA = 5;
-	public static final int DESVIA_SE_DIFERENTE = 5;
-	public static final int DESVIA_SE_IGUAL = 5;
-	public static final int DESVIA_SE_MENOR_IGUAL_ZERO = 5;
-	public static final int RETORNA_DA_SUBROTINA = 5;
+	public static final int JUMP = 14;
+	public static final int JNE = 15;
+	public static final int JE = 16;
+	public static final int DESVIA_SE_MENOR_IGUAL_ZERO = 17;
+	public static final int RETORNA_DA_SUBROTINA = 18;
+	public static final int FLD = 19;
+	public static final int ADD_FLOAT = 20;
+	public static final int SUB_FLOAT = 21;
+	public static final int MULT_FLOAT = 22;
+	public static final int DIV_FLOAT = 23;
 	
 	
 	public static final String PRINTF = "_printf";
@@ -37,6 +42,14 @@ public interface InstructionType {
 	public static final String INT_FORMAT = "intFormat";
 	public static final String DOUBLE_FORMAT = "doubleFormat";
 	public static final String CONSTANTE = "const";
+	public static final String DWORD = "dword";
+	public static final String QWORD = "qword";
+	public static final String FADDP = "faddp";
+	public static final String ST1 = "st1";
+	
+	
+	public static final String FSTP = "fstp";
+
 	
 	public static final String EBP = "ebp";
 	public static final String ESP = "esp";

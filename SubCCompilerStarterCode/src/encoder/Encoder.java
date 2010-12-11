@@ -23,6 +23,7 @@ import util.AST.Statement.ContinueStatement;
 import util.AST.Statement.IfElseStatement;
 import util.AST.Statement.PrintlnStatement;
 import util.AST.Statement.ReturnStatement;
+import util.AST.Statement.Statement;
 import util.AST.Statement.WhileStatement;
 import util.AST.Terminal.BooleanValue;
 import util.AST.Terminal.Identifier;
@@ -55,7 +56,8 @@ public class Encoder implements Visitor {
 	}
 
 	public void encode(Program prog) throws SemanticException{
-		prog.visit(this, null);
+		Frame frameGlobal = new Frame(0, 0);
+		prog.visit(this, frameGlobal);
 		this.gravarArquivo();
 	}
 
@@ -71,16 +73,13 @@ public class Encoder implements Visitor {
 	public Object visitProgram(Program prog, Object arg)
 	throws SemanticException {
 
-		//this.emit(InstructionType.EXTERN,InstructionType.PRINTF,null,null);
-		//Comentado, se não tiver println, não pode adicionar o extern
-
 		this.emit(InstructionType.SECTION,InstructionType.DATA);
 		this.emit(InstructionType.SECTION,InstructionType.TEXT);
 
 		ArrayList<Command> comandos = prog.getCommands();
 		for (Command com : comandos){
 			//se for declaracao de variavel global, passa o prog pra ele saber
-			com.visit(this, prog);
+			com.visit(this, arg);
 		}
 		return null;
 	}
@@ -88,8 +87,12 @@ public class Encoder implements Visitor {
 
 	public Object visitVariableDeclaration(VariableDeclaration decl, Object arg)
 	throws SemanticException {
-		//se for variavel global, jogar ela na sessão data;
-		if (arg instanceof Program){
+
+		Frame frame = (Frame) arg;
+		Identifier id = decl.getIdentifier();
+
+		//variaveis globais
+		if (frame.getLevel() == 0){
 			Instruction variavelGlobal = new Instruction(InstructionType.VARIAVEL_GLOBAL, //variavel global 
 					decl.getIdentifier().getSpelling(), //nomeVariavel
 					decl.getType().getSpelling(), //TipoVariavel
@@ -97,11 +100,25 @@ public class Encoder implements Visitor {
 
 			this.codigo.add(this.posicaoInstrucaoSessaoData, variavelGlobal);
 			this.posicaoInstrucaoSessaoData++;
-		}else{
-			//Variável não é global
+			int tamanho = 4;
+			String valor = "0";
+			if (decl.getType().getSpelling().equals("double")){
+				tamanho = 8;
+				valor = "0.0";
+			}
+			//FIXME: caso voces tenham necessidade de aumentar o frame, faço-o aqui
+			decl.entity = new KnownValue(tamanho,valor,decl.getIdentifier().getSpelling());
 
-			this.encodeFetch(decl.getIdentifier());
-
+		}
+		//variavel local
+		else{
+			int tamanho = 4;
+			if (decl.getType().equals("double")){
+				tamanho = 8;
+			}
+			this.emit(InstructionType.SUB, InstructionType.ESP, "" + tamanho, null);
+			decl.entity = new KnownAddress(tamanho,frame.getSize());
+			frame.setSize(frame.getSize() + tamanho);
 		}
 
 		return null;
@@ -110,25 +127,36 @@ public class Encoder implements Visitor {
 	public Object visitFunctionDeclaration(FunctionDeclaration decl, Object arg)
 	throws SemanticException {
 
+		Frame frame = new Frame(1, 0);
 		this.emit(InstructionType.FUNCAO_LABEL, decl.getFunctionName().getSpelling());
-
+		this.emit(InstructionType.PUSH, InstructionType.EBP);
+		this.emit(InstructionType.MOV, InstructionType.EBP, InstructionType.ESP, null);
+		decl.entity = new KnownRoutine(decl.getFunctionName().getSpelling());
 		//TODO: Criar instruções dos parametros
+		//decl.getParameters();
+		for (VariableDeclaration vd : decl.getParameters()){
+			//	vd.entity = 
+		}
 		FunctionBody fb = decl.getFunctionBody();
 		if (fb != null){
 			//visitar o function body
-			fb.visit(this, decl);
+			fb.visit(this, frame);
 		}
 		return null;
 	}
 
 	public Object visitFunctionBody(FunctionBody fbody, Object arg)
 	throws SemanticException {
-		
+
 		ArrayList<VariableDeclaration> variaveis = fbody.getVariables();
 		for (VariableDeclaration vd : variaveis){
 			vd.visit(this, arg);
 		}
-		
+		ArrayList<Statement> statements = fbody.getStatements();
+		for (Statement stat : statements){
+			stat.visit(this, arg);
+		}
+
 		return null;
 	}
 
@@ -148,17 +176,24 @@ public class Encoder implements Visitor {
 	}
 
 	private void encodeAssign(Identifier variableName) {
-	// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 
 	}
 
-	private void encodeFetch(Identifier variableName){
+	private void encodeFetch(Identifier id, Frame frame) throws SemanticException{
+		RuntimeEntity entity = (RuntimeEntity) id.visit(this, null)	;
+
 
 	}
 
 	public Object visitIfElseStatement(IfElseStatement stat, Object arg)
 	throws SemanticException {
 		// TODO Auto-generated method stub
+		stat.getCondition().visit(this, arg);
+	
+		ArrayList<Statement> stats = stat.getIfStatements();
+	
+		
 		return null;
 	}
 
@@ -213,11 +248,12 @@ public class Encoder implements Visitor {
 		//O tipo é necessário para saber qual instrução chamar,
 		//já que as instruções de inteiro são distintas das de ponto flutuante
 		String tipo = ((VariableDeclaration)stat.getVariableName().getNoDeclaracao()).getType().getSpelling();
+
 		this.emit(InstructionType.FUNCAO_LABEL, InstructionType.PRINTF, tipo, null);
 
 		//Desempilha os dois ultimos valores da pilha que foram o valor e formato do printf
-		this.emit(InstructionType.DESEMPILHAR, null);
-		this.emit(InstructionType.DESEMPILHAR, null);
+		this.emit(InstructionType.POP, null);
+		this.emit(InstructionType.POP, null);
 
 		return null;
 	}
@@ -237,19 +273,25 @@ public class Encoder implements Visitor {
 	public Object visitBinaryExpression(BinaryExpression byExp, Object arg)
 	throws SemanticException {
 		// TODO Auto-generated method stub
+		byExp.getLeftExpression().visit(this, arg);
+		byExp.getRightExpression().visit(this, arg);
+		byExp.getOperator().visit(this, byExp.getType());
+
 		return null;
 	}
 
 	public Object visitIdentifierUnaryExpression(
 			IdentifierUnaryExpression idUnExp, Object arg)
 	throws SemanticException {
-		// TODO Auto-generated method stub
+
+		idUnExp.getVariableName().visit(this, arg);
+		
 		return null;
 	}
 
 	public Object visitNumberUnaryExpression(NumberUnaryExpression numUnExp,
 			Object arg) {
-		// TODO Auto-generated method stub
+		numUnExp.visit(this, numUnExp.getType());
 		return null;
 	}
 
@@ -261,23 +303,126 @@ public class Encoder implements Visitor {
 
 	public Object visitIdentifier(Identifier id, Object arg)
 	throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+
+		return id.getNoDeclaracao().entity;
 	}
 
 	public Object visitOperator(Operator op, Object arg)
 	throws SemanticException {
-		// TODO Auto-generated method stub
+
+		Type tipo = (Type) arg;
+		Operator operador = op;
+		if(operador.equals("+")){
+			if (tipo.getSpelling().equals("double")){
+				this.emit(InstructionType.ADD_FLOAT, InstructionType.ST1);
+			}
+			else {
+				this.emit(InstructionType.POP, InstructionType.EBX);
+				this.emit(InstructionType.POP, InstructionType.EAX);
+				this.emit(InstructionType.ADD,InstructionType.EAX,InstructionType.EBX,null);
+			}
+		}
+		if(operador.equals("-")){
+			if (tipo.getSpelling().equals("double")){
+				this.emit(InstructionType.SUB_FLOAT, InstructionType.ST1);
+			}
+			else {
+				this.emit(InstructionType.POP, InstructionType.EBX);
+				this.emit(InstructionType.POP, InstructionType.EAX);
+				this.emit(InstructionType.SUB,InstructionType.EAX,InstructionType.EBX,null);
+			}
+		}
+		if(operador.equals("*")){
+			if (tipo.getSpelling().equals("double")){
+				this.emit(InstructionType.MULT_FLOAT, InstructionType.ST1);
+			}
+			else {
+				this.emit(InstructionType.POP, InstructionType.EBX);
+				this.emit(InstructionType.POP, InstructionType.EAX);
+				this.emit(InstructionType.MULT,InstructionType.EAX,InstructionType.EBX,null);
+			}
+
+		}
+		if(operador.equals("/")){
+			if (tipo.getSpelling().equals("double")){
+				this.emit(InstructionType.DIV_FLOAT, InstructionType.ST1);
+			}
+			else {
+				this.emit(InstructionType.POP, InstructionType.EBX);
+				this.emit(InstructionType.POP, InstructionType.EAX);
+				this.emit(InstructionType.DIV,InstructionType.EAX,InstructionType.EBX,null);
+			}
+		}
+
+		if(operador.equals("==")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
+
+		if(operador.equals("!=")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
+		if(operador.equals("<")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
+
+		if(operador.equals(">")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
+		if(operador.equals("<=")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
+
+		if(operador.equals(">=")){
+			this.emit(InstructionType.POP, InstructionType.EBX);
+			this.emit(InstructionType.POP, InstructionType.EAX);
+			this.emit(InstructionType.CMP, InstructionType.EAX, InstructionType.EBX, null);
+		}
 		return null;
+
+
 	}
 
 	public Object visitNumberValue(NumberValue number, Object arg) {
-		// TODO Auto-generated method stub
+
+		Type tipo = (Type) arg;
+
+		if (tipo.getSpelling().equals("int")){
+			this.emit(InstructionType.PUSH, InstructionType.DWORD, number.getSpelling(), null);
+		}
+		else {
+			//colocando a constante na section DATA
+			String constante = "const" + this.indiceConstante;
+			Instruction instrucao = new Instruction(InstructionType.CONSTANTE_DOUBLE, constante, number.getSpelling(), null);
+
+			this.codigo.add(this.posicaoInstrucaoSessaoData, instrucao);
+			this.emit(InstructionType.FLD, InstructionType.QWORD, constante, null);
+
+			this.posicaoInstrucaoSessaoData++;
+			this.indiceConstante++;
+
+		}
+
 		return null;
 	}
 
 	public Object visitBooleanValue(BooleanValue boo, Object arg) {
-		// TODO Auto-generated method stub
+		if (boo.getSpelling().equals("true")){
+			this.emit(InstructionType.PUSH, InstructionType.DWORD, "1",null);
+		}
+		else {
+			this.emit(InstructionType.PUSH, InstructionType.DWORD, "0",null);
+		}
+
 		return null;
 	}
 

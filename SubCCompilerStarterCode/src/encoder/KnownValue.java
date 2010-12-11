@@ -2,6 +2,24 @@ package encoder;
 
 public class KnownValue extends RuntimeEntity {
 
-	public String valor;
+	private String valor;
+	private String label;
+	
+	public KnownValue(int size,String valor,String label) {
+		super(size);
+		this.valor = valor;
+		this.label = label;
+	}
+
+	public String getValor() {
+		return valor;
+	}
+
+	public void setValor(String valor) {
+		this.valor = valor;
+	}
+
+
+
 	
 }
