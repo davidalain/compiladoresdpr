@@ -2,6 +2,7 @@ package util.AST;
 
 import checker.SemanticException;
 import checker.Visitor;
+import encoder.RuntimeEntity;
 
 /**
  * AST class
@@ -24,5 +25,6 @@ public abstract class AST {
 	public abstract String toString(int level);
 	
 	public abstract Object visit(Visitor v, Object arg) throws SemanticException;
-	
+
+	public RuntimeEntity entity;
 }

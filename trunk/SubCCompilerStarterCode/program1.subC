@@ -1,7 +1,14 @@
 int a;
 double b;
-int d;
+boolean d;
 
+
+void teste(){
+	if (true){
+		d = ((1==1));
+	}
+	
+}
 
 void main (){
 }
