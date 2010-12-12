@@ -139,15 +139,16 @@ public class Encoder implements Visitor {
 	throws SemanticException {
 
 		Frame frame = new Frame(1, 0);
+		String labelFuncao = "_" + decl.getFunctionName().getSpelling();
 		if(decl.getFunctionName().getSpelling().equals("main")){
 			this.emit(InstructionType.FUNCAO_LABEL, InstructionType.WINMAIN);
 		}else{
-			this.emit(InstructionType.FUNCAO_LABEL, decl.getFunctionName().getSpelling());
+			this.emit(InstructionType.FUNCAO_LABEL, labelFuncao);
 		}
 
 		this.emit(InstructionType.PUSH, InstructionType.EBP);
 		this.emit(InstructionType.MOV, InstructionType.EBP, InstructionType.ESP, null);
-		decl.entity = new KnownRoutine(decl.getFunctionName().getSpelling());
+		decl.entity = new KnownRoutine(labelFuncao);
 		ArrayList<VariableDeclaration> variaveis = decl.getParameters();
 		if (variaveis != null){
 			int endereco = 4;
@@ -166,6 +167,13 @@ public class Encoder implements Visitor {
 			//visitar o function body
 			fb.visit(this, frame);
 		}
+		if(decl.getFunctionName().getSpelling().equals("main")){
+			this.emit(InstructionType.MOV, InstructionType.ESP, InstructionType.EBP,null);
+			this.emit(InstructionType.POP, InstructionType.EBP);
+			this.emit(InstructionType.MOV, InstructionType.EAX, "0",null);
+			this.emit(InstructionType.RET, null);
+		}
+		
 		return null;
 	}
 
@@ -202,7 +210,7 @@ public class Encoder implements Visitor {
 		if (argumentos != null){
 			for (Identifier id : argumentos){
 				entity = (RuntimeEntity) id.visit(this, arg);
-				this.encodeFetch(id, frame);
+				this.encodeFetch(id, frame,false);
 				qtdParametros += entity.getSize();
 			}
 		}
@@ -281,17 +289,22 @@ public class Encoder implements Visitor {
 
 	}
 
-	private void encodeFetch(Identifier id, Frame frame) throws SemanticException{
+	private void encodeFetch(Identifier id, Frame frame , boolean doubleFormat) throws SemanticException{
 		RuntimeEntity entity = (RuntimeEntity) id.visit(this, null);
 
 		//variavel global
 		if (entity instanceof KnownValue){
 			//se a variavel é inteira ou bool
 			if (entity.getSize() == 4){
-				this.emit(InstructionType.PUSH,InstructionType.DWORD,((KnownValue)entity).getLabel(),null);
+				this.emit(InstructionType.PUSH,InstructionType.DWORD, "[" + ((KnownValue)entity).getLabel() + "]",null);
 			}
 			else {
-				this.emit(InstructionType.PUSH_FLOAT,InstructionType.QWORD,((KnownValue)entity).getLabel(),null);
+				if(doubleFormat){
+					this.emit(InstructionType.PUSH,InstructionType.DWORD, "[" + ((KnownValue)entity).getLabel() + "+4]",null);
+					this.emit(InstructionType.PUSH,InstructionType.DWORD, "[" + ((KnownValue)entity).getLabel() + "]",null);
+				}else{
+					this.emit(InstructionType.PUSH_FLOAT,InstructionType.QWORD, ((KnownValue)entity).getLabel() ,null);
+				}
 			}
 
 		}
@@ -336,8 +349,8 @@ public class Encoder implements Visitor {
 		
 		Expression condicao = stat.getCondition();
 		Integer desvio = (Integer) condicao.visit(this, argTemp);
-		String labelElse = "else_" + this.indiceElse;
-		String labelFimIfElse = "fim_if_else" + this.indiceEndIf;
+		String labelElse = "else_" + this.indiceElse + "_block";
+		String labelFimIfElse = "endif_" + this.indiceEndIf;
 		this.indiceElse++;
 		this.indiceEndIf++;
 
@@ -492,19 +505,37 @@ public class Encoder implements Visitor {
 			this.posicaoInstrucaoSessaoData = 2;
 		}
 		//TODO: Código de chamar o println
-
-		//O visit coloca na pilha o valor a ser mostrado
+		
+		Frame frame;
+		if (arg instanceof ArrayList){
+			frame = (Frame) ((ArrayList<Object>)arg).get(0);
+		}
+		else {
+			frame = (Frame) arg;
+		}
+		
 		stat.getVariableName().visit(this, arg);
-
+		this.encodeFetch(stat.getVariableName(), frame , true);
+		
 		//O tipo é necessário para saber qual instrução chamar,
 		//já que as instruções de inteiro são distintas das de ponto flutuante
 		String tipo = ((VariableDeclaration)stat.getVariableName().getNoDeclaracao()).getType().getSpelling();
-
-		this.emit(InstructionType.FUNCAO_LABEL, InstructionType.PRINTF, tipo, null);
+		if(tipo.equals("double")){
+			this.emit(InstructionType.PUSH, InstructionType.DWORD, InstructionType.DOUBLE_FORMAT,null);
+		}else{
+			this.emit(InstructionType.PUSH, InstructionType.DWORD, InstructionType.INT_FORMAT,null);
+		}
+		
+		this.emit(InstructionType.CALL, InstructionType.PRINTF);
 
 		//Desempilha os dois ultimos valores da pilha que foram o valor e formato do printf
-		this.emit(InstructionType.POP, null);
-		this.emit(InstructionType.POP, null);
+		if(tipo.equals("double")){
+			this.emit(InstructionType.ADD, InstructionType.ESP, "12",null);
+		}else{
+			this.emit(InstructionType.ADD, InstructionType.ESP, "8" ,null);
+		}
+		
+		
 
 		return null;
 	}
@@ -542,7 +573,7 @@ public class Encoder implements Visitor {
 		else {
 			frame = (Frame) arg;
 		}
-		this.encodeFetch(idUnExp.getVariableName(), frame);
+		this.encodeFetch(idUnExp.getVariableName(), frame, false);
 		idUnExp.getVariableName().visit(this, arg);
 
 		return null;
@@ -580,9 +611,8 @@ public class Encoder implements Visitor {
 				this.emit(InstructionType.POP, InstructionType.EBX);
 				this.emit(InstructionType.POP, InstructionType.EAX);
 				this.emit(InstructionType.ADD,InstructionType.EAX,InstructionType.EBX,null);
+				this.emit(InstructionType.PUSH, InstructionType.EAX);
 			}
-			this.emit(InstructionType.PUSH, InstructionType.EAX);
-			
 		}
 		if(operador.equals("-")){
 
@@ -593,9 +623,8 @@ public class Encoder implements Visitor {
 				this.emit(InstructionType.POP, InstructionType.EBX);
 				this.emit(InstructionType.POP, InstructionType.EAX);
 				this.emit(InstructionType.SUB,InstructionType.EAX,InstructionType.EBX,null);
+				this.emit(InstructionType.PUSH, InstructionType.EAX);
 			}
-			this.emit(InstructionType.PUSH, InstructionType.EAX);
-			
 		}
 		if(operador.equals("*")){
 			if (tipo.getSpelling().equals("double")){
@@ -605,9 +634,8 @@ public class Encoder implements Visitor {
 				this.emit(InstructionType.POP, InstructionType.EBX);
 				this.emit(InstructionType.POP, InstructionType.EAX);
 				this.emit(InstructionType.MULT,InstructionType.EAX,InstructionType.EBX,null);
+				this.emit(InstructionType.PUSH, InstructionType.EAX);
 			}
-			this.emit(InstructionType.PUSH, InstructionType.EAX);
-			
 		}
 		if(operador.equals("/")){
 			if (tipo.getSpelling().equals("double")){
@@ -617,9 +645,8 @@ public class Encoder implements Visitor {
 				this.emit(InstructionType.POP, InstructionType.EBX);
 				this.emit(InstructionType.POP, InstructionType.EAX);
 				this.emit(InstructionType.DIV,InstructionType.EAX,InstructionType.EBX,null);
+				this.emit(InstructionType.PUSH, InstructionType.EAX);
 			}
-			this.emit(InstructionType.PUSH, InstructionType.EAX);
-			
 		}
 
 		if(operador.equals("==")){
