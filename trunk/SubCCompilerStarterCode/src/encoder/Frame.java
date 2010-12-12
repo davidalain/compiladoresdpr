@@ -5,7 +5,6 @@ public class Frame {
 	private int level;
 	private int size;
 	
-	
 	public Frame(int level, int size) {
 		super();
 		this.level = level;

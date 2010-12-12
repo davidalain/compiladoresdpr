@@ -23,11 +23,22 @@ public interface InstructionType {
 	public static final int JE = 16;
 	public static final int DESVIA_SE_MENOR_IGUAL_ZERO = 17;
 	public static final int RETORNA_DA_SUBROTINA = 18;
-	public static final int FLD = 19;
+	public static final int PUSH_FLOAT = 19;
 	public static final int ADD_FLOAT = 20;
 	public static final int SUB_FLOAT = 21;
 	public static final int MULT_FLOAT = 22;
 	public static final int DIV_FLOAT = 23;
+	public static final int POP_FLOAT = 24;
+	public static final int BOOLEANO = 25;
+	public static final int LABEL = 26;
+	public static final int JGE = 27;
+	public static final int JLE = 28;
+	public static final int JG = 29;
+	public static final int JL = 30;
+	public static final int RET = 31;
+	public static final int CALL = 32;
+	
+	
 	
 	
 	public static final String PRINTF = "_printf";
@@ -48,7 +59,6 @@ public interface InstructionType {
 	public static final String ST1 = "st1";
 	
 	
-	public static final String FSTP = "fstp";
 
 	
 	public static final String EBP = "ebp";
