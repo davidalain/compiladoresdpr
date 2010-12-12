@@ -283,7 +283,7 @@ public class Instruction {
 			
 		}else{
 			//push dword [ebp+8] ;				
-			retorno = "push " + this.getOp1() + "[" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
+			retorno = "push " + this.getOp1() + " [" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
 		}
 		return retorno;
 	}
