@@ -19,6 +19,14 @@ public class KnownValue extends RuntimeEntity {
 		this.valor = valor;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 
 
 	

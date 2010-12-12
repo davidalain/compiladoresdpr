@@ -8,13 +8,23 @@ public class Instruction {
 	private String op2; // length field (0 .. 255)
 	private String op3; // operand field (-32767 .. +32767)
 	private StringBuffer retorno;
-
+	private String sinal;
+	
 	public Instruction(int tipo, String op1, String op2, String op3) {
 		this.tipo = tipo;
 		this.op1 = op1;
 		this.op2 = op2;
 		this.op3 = op3;
 		this.retorno = new StringBuffer();
+	}
+
+	public Instruction(int tipo, String op1, String op2, String op3,
+			String sinal) {
+		this.tipo = tipo;
+		this.op1 = op1;
+		this.op2 = op2;
+		this.op3 = op3;
+		this.sinal = sinal;
 	}
 
 	public int getTipo() {
@@ -81,8 +91,8 @@ public class Instruction {
 			retorno = this.criarInstrucaoPush();
 			break;
 		}
-		case InstructionType.FLD:{
-			retorno = this.criarInstrucaoFLD();
+		case InstructionType.PUSH_FLOAT:{
+			retorno = this.criarInstrucaoPushFloat();
 			break;
 		}
 		case InstructionType.MOV:{
@@ -105,7 +115,6 @@ public class Instruction {
 			retorno = "idiv " + this.getOp1()+ ", " + this.getOp2();
 			break;
 		}
-
 		case InstructionType.ADD_FLOAT:{
 			retorno =  "faddp " + this.getOp1();
 			break;
@@ -124,13 +133,65 @@ public class Instruction {
 		}
 		case InstructionType.CMP:{
 			retorno = "cmp " + this.getOp1() + ", " + this.getOp2();
-			
+			break;
 		}
-
 		case InstructionType.POP:{
 			retorno = this.criarInstrucaoPOP();
 			break;
 		}
+		case InstructionType.CONSTANTE_DOUBLE:{
+			retorno = this.getOp1() + ": dq " + this.getOp2()  ;
+			break;
+		}
+		case InstructionType.POP_FLOAT:{
+			retorno = this.criarInstrucaoPopFloat();
+			break;
+				//"fstp " + this.getOp1() + " [" + this.getOp2() + "]";
+		}
+		case InstructionType.JNE:{
+			retorno = "jne " + this.getOp1();
+			break;
+		}
+		case InstructionType.JE:{
+			retorno = "je " + this.getOp1();
+			break;
+		}
+		case InstructionType.JGE:{
+			retorno = "jge " + this.getOp1();
+			break;
+		}
+		case InstructionType.JLE:{
+			retorno = "jle " + this.getOp1();
+			break;
+		}
+		case InstructionType.JG:{
+			retorno = "jg " + this.getOp1();
+			break;
+		}
+		case InstructionType.JL:{
+			retorno = "jl " + this.getOp1();
+			break;
+		}
+		case InstructionType.LABEL:{
+//			retorno = "\t";
+			retorno = this.getOp1() + ":";
+		
+			break;
+		}
+		case InstructionType.JUMP:{
+			retorno = "jmp " + this.getOp1();
+			break;
+		}
+		case InstructionType.RET:{
+			retorno = "ret";
+			break;
+		}
+		case InstructionType.CALL:{
+			retorno = "call " + this.getOp1();
+			break;
+		}
+		
+	
 	
 
 
@@ -148,6 +209,27 @@ public class Instruction {
 		return retorno;
 	}
 
+	
+	private String criarInstrucaoPopFloat() {
+		String retorno = null;
+		
+		if(this.getOp2() == null && this.getOp3() == null){
+			//pop ebp ;
+			retorno = "fstp " + this.getOp1() ;
+			
+		}else if (this.getOp2() != null && this.getOp3() == null){
+		    //pop dword [a] ;				
+			retorno = "fstp " + this.getOp1() + " [" + this.getOp2() + "]";
+			
+		}
+		else{
+			//pop dword [ebp+8] ;				
+			retorno = "fstp " + this.getOp1() + " [" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
+		}
+		return retorno;
+
+	}
+
 	private String criarInstrucaoPOP() {
 		String retorno = null;
 		
@@ -156,21 +238,36 @@ public class Instruction {
 			retorno = "pop " + this.getOp1() ;
 			
 		}else if (this.getOp2() != null && this.getOp3() == null){
-		    //pop dword 1 ;				
-			retorno = "pop " + this.getOp1() + " " + this.getOp2();
+		    //pop dword [a] ;				
+			retorno = "pop " + this.getOp1() + " [" + this.getOp2() + "]";
 			
-		}else{
+		}
+		else{
 			//pop dword [ebp+8] ;				
-			retorno = "pop " + this.getOp1() + "[" + this.getOp2() + "+" + this.getOp3() + "]";
+			retorno = "pop " + this.getOp1() + " [" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
 		}
 		return retorno;
 
 	}
 
-	private String criarInstrucaoFLD() {
-		String retorno = "";
-		retorno += "fld " + this.getOp1() + "[" + this.getOp2()+ "]";
+	private String criarInstrucaoPushFloat() {
+		String retorno = null;
+		
+		if(this.getOp2() == null && this.getOp3() == null){
+			//pop ebp ;
+			retorno = "fld " + this.getOp1() ;
+			
+		}else if (this.getOp2() != null && this.getOp3() == null){
+		    //pop dword [a] ;				
+			retorno = "fld " + this.getOp1() + " [" + this.getOp2() + "]";
+			
+		}
+		else{
+			//pop dword [ebp+8] ;				
+			retorno = "fld " + this.getOp1() + " [" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
+		}
 		return retorno;
+
 	}
 
 	private String criarInstrucaoPush() {
@@ -186,14 +283,14 @@ public class Instruction {
 			
 		}else{
 			//push dword [ebp+8] ;				
-			retorno = "push " + this.getOp1() + "[" + this.getOp2() + "+" + this.getOp3() + "]";
+			retorno = "push " + this.getOp1() + "[" + this.getOp2() + this.getSinal() + this.getOp3() + "]";
 		}
 		return retorno;
 	}
 
 	private String criarInstrucaoFuncao() {
 		this.retorno.append("\t");
-		this.retorno.append("_" + this.getOp1() + ":");
+		this.retorno.append(this.getOp1() + ":");
 		return this.retorno.toString();
 	
 	}
@@ -227,7 +324,6 @@ public class Instruction {
 		return this.retorno.toString();
 	}
 
-
 	private String criarInstrucaoSectionText() {
 		this.retorno.append("\n");
 		this.retorno.append("\t");
@@ -245,9 +341,11 @@ public class Instruction {
 		return this.criarInstrucao();
 	}
 
+	public String getSinal() {
+		return sinal;
+	}
 
-
-
-
-
+	public void setSinal(String sinal) {
+		this.sinal = sinal;
+	}
 }
